@@ -79,10 +79,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "চাবির গোছা — Keychain Store Bangladesh" },
+      { title: "ayhymmh — Keychain & Flag Store Bangladesh" },
       {
         name: "description",
-        content: "কিউট ও মিনিমাল keychain — flag ও keychain stuff. Dhaka-তে ১–২ দিনে delivery।",
+        content: "Premium keychain ও flag collection. Dhaka-তে ১–২ দিনে delivery।",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { ProductCard } from "@/components/ProductCard";
-import { useUi } from "@/components/Shell";
 import { useStore, type Category } from "@/lib/store";
 
 export const Route = createFileRoute("/")({
@@ -18,6 +17,8 @@ export const Route = createFileRoute("/")({
         property: "og:description",
         content: "Flag ও keychain stuff — WhatsApp এ অর্ডার করুন, Dhaka-তে ১–২ দিনে delivery।",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Home,
@@ -26,12 +27,11 @@ export const Route = createFileRoute("/")({
 const TABS: { key: Category | "all"; label: string }[] = [
   { key: "all", label: "সব" },
   { key: "flag", label: "Flag" },
-  { key: "keychain", label: "Keychain stuff" },
+  { key: "keychain", label: "Keychain" },
 ];
 
 function Home() {
-  const { products, addToCart, waLink } = useStore();
-  const { openCart } = useUi();
+  const { products, cart, addToCart, setQty, waLink } = useStore();
   const [tab, setTab] = useState<Category | "all">("all");
   const [q, setQ] = useState("");
 
@@ -48,31 +48,31 @@ function Home() {
 
   const add = (sku: string) => {
     addToCart(sku);
-    openCart();
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-4">
+    <div className="mx-auto max-w-6xl overflow-hidden px-4">
       {/* Hero */}
-      <section className="rise brutal-pink mt-5 rounded-3xl bg-brand-wash p-5 sm:p-8">
-        <p className="inline-block rounded-full border-2 border-ink bg-white px-2.5 py-0.5 text-[11px] font-bold">
-          Free delivery on select items 🩷
-        </p>
-        <h1 className="mt-3 text-3xl font-bold leading-tight sm:text-5xl">
-          চাবির গোছা — ছোট্ট জিনিস,
-          <br />
-          বড় vibe.
-        </h1>
-        <p className="mt-3 max-w-md text-sm text-muted-foreground sm:text-base">
-          Flag keychain আর cute keychain stuff — ৳100 থেকে শুরু। Dhaka-তে ১–২ দিনের delivery,
-          bKash বা Cash on Delivery।
-        </p>
+      <section className="hero-wave rise mt-4 overflow-hidden border-4 border-ink bg-brand-wash p-5 sm:mt-6 sm:p-8">
+        <div className="grid items-end gap-5 sm:grid-cols-[1.5fr_0.7fr]">
+          <div>
+            <p className="inline-block border-2 border-ink bg-card px-2.5 py-1 text-[11px] font-bold uppercase">
+              Keychain + Flag / Bangladesh
+            </p>
+            <h1 className="mt-3 text-4xl font-bold uppercase leading-[0.92] sm:text-6xl">
+              Pick it.<br />Clip it.<br /><span className="text-brand">Make it yours.</span>
+            </h1>
+          </div>
+          <div className="border-3 border-ink bg-ink p-4 text-primary-foreground shadow-[6px_6px_0_0_var(--brand)]">
+            <p className="text-sm font-bold leading-relaxed">Premium keychain আর flag collection — ৳100 থেকে। Dhaka-তে ১–২ দিনের delivery.</p>
+          </div>
+        </div>
         <div className="mt-5 flex flex-wrap gap-3">
           <a
             href="#collection"
-            className="brutal press rounded-2xl bg-brand px-4 py-2.5 text-sm font-bold"
+            className="brutal press bg-brand px-4 py-2.5 text-sm font-bold"
           >
-            Collection দেখুন
+            Shop the drop →
           </a>
           <a
             href={waLink(
@@ -80,7 +80,7 @@ function Home() {
             )}
             target="_blank"
             rel="noreferrer"
-            className="brutal-sm press rounded-2xl bg-white px-4 py-2.5 text-sm font-bold"
+            className="brutal-sm press bg-card px-4 py-2.5 text-sm font-bold"
           >
             Follow up on my order
           </a>
@@ -88,22 +88,22 @@ function Home() {
       </section>
 
       {/* Search + categories */}
-      <section id="collection" className="mt-8 scroll-mt-20">
+      <section id="collection" className="mt-7 scroll-mt-20">
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
           maxLength={60}
           placeholder="Search keychain বা SKU…"
           aria-label="Search products"
-          className="brutal-sm w-full rounded-2xl bg-white px-4 py-3 text-sm outline-none focus:shadow-[3px_3px_0_0_var(--brand)]"
+          className="brutal-sm w-full bg-card px-4 py-3 text-sm outline-none focus:shadow-[4px_4px_0_0_var(--brand)]"
         />
         <div className="no-scrollbar mt-3 flex gap-2 overflow-x-auto pb-1">
           {TABS.map((t) => (
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
-              className={`brutal-sm press shrink-0 rounded-full px-4 py-2 text-sm font-bold ${
-                tab === t.key ? "bg-brand" : "bg-white"
+              className={`brutal-sm press min-h-11 shrink-0 px-4 py-2 text-sm font-bold uppercase ${
+                tab === t.key ? "bg-brand" : "bg-card"
               }`}
             >
               {t.label}
@@ -113,9 +113,15 @@ function Home() {
       </section>
 
       {/* Grid */}
-      <section className="mt-5 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
+      <section className="mt-6 grid grid-cols-2 gap-4 pb-4 sm:gap-6 md:grid-cols-3">
         {list.map((p) => (
-          <ProductCard key={p.id} product={p} onAdd={add} />
+          <ProductCard
+            key={p.id}
+            product={p}
+            onAdd={add}
+            quantity={cart.find((line) => line.sku === p.sku)?.qty ?? 0}
+            onSetQuantity={setQty}
+          />
         ))}
       </section>
       {!list.length && (
