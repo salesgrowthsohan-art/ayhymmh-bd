@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ProductMedia } from "@/components/ProductMedia";
 import { taka, useStore } from "@/lib/store";
 
 type Form = { name: string; phone: string; address: string };
@@ -69,10 +70,9 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
             <ul className="space-y-3">
               {lines.map((l) => (
                 <li key={l.sku} className="brutal-sm flex gap-3 rounded-2xl bg-white p-2">
-                  <img
+                  <ProductMedia
                     src={l.product.images[0]}
                     alt={l.product.title}
-                    loading="lazy"
                     className="h-16 w-16 rounded-xl border-2 border-ink object-cover"
                   />
                   <div className="min-w-0 flex-1">

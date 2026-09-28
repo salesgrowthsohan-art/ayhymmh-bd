@@ -1,20 +1,23 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useUi } from "@/components/Shell";
+import { ProductMedia } from "@/components/ProductMedia";
 import { taka, useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/product/$sku")({
   head: ({ params }) => ({
     meta: [
-      { title: `${params.sku} — চাবির গোছা Keychain` },
+      { title: `${params.sku} — ayhymmh Keychain & Flag` },
       {
         name: "description",
         content: `Keychain ${params.sku} — দাম, stock status আর delivery তথ্য। WhatsApp এ সরাসরি অর্ডার করুন।`,
       },
-      { property: "og:title", content: `${params.sku} — চাবির গোছা` },
+      { property: "og:title", content: `${params.sku} — ayhymmh` },
       {
         property: "og:description",
         content: "Cute keychain, Dhaka-তে ১–২ দিনে delivery, bKash বা Cash on Delivery।",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: ProductDetail,
@@ -64,7 +67,7 @@ function ProductDetail() {
         <div>
           <div className="no-scrollbar brutal flex snap-x snap-mandatory gap-0 overflow-x-auto rounded-3xl bg-white">
             {product.images.map((src, i) => (
-              <img
+              <ProductMedia
                 key={i}
                 src={src}
                 alt={`${product.title} — ছবি ${i + 1}`}

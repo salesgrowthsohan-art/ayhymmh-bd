@@ -8,11 +8,13 @@ export function ProductCard({
   onAdd,
   quantity,
   onSetQuantity,
+  priority = false,
 }: {
   product: Product;
   onAdd: (sku: string) => void;
   quantity: number;
   onSetQuantity: (sku: string, quantity: number) => void;
+  priority?: boolean;
 }) {
   return (
     <article className="product-card rise flex min-w-0 flex-col overflow-hidden bg-card">
@@ -24,6 +26,7 @@ export function ProductCard({
         <ProductMedia
           src={product.images[0]}
           alt={product.title}
+          loading={priority ? "eager" : "lazy"}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.035]"
         />
         {!product.inStock && (

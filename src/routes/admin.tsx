@@ -1,15 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { ChevronDown, ChevronUp, ImagePlus, Trash2 } from "lucide-react";
+import { useRef, useState } from "react";
+import { ProductMedia } from "@/components/ProductMedia";
 import { taka, useStore, type Category, type Product } from "@/lib/store";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
-      { title: "Admin — চাবির গোছা" },
-      { name: "description", content: "চাবির গোছা স্টোরের প্রোডাক্ট ও সেটিংস ম্যানেজমেন্ট।" },
+      { title: "Admin — ayhymmh" },
+      { name: "description", content: "ayhymmh স্টোরের প্রোডাক্ট ও সেটিংস ম্যানেজমেন্ট।" },
       { name: "robots", content: "noindex" },
-      { property: "og:title", content: "Admin — চাবির গোছা" },
+      { property: "og:title", content: "Admin — ayhymmh" },
       { property: "og:description", content: "Store admin panel." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Admin,
@@ -82,9 +86,11 @@ function Admin() {
 }
 
 function ProductManager() {
-  const { products, saveProduct, deleteProduct } = useStore();
+  const { products, saveProduct, deleteProduct, moveProduct } = useStore();
   const [draft, setDraft] = useState<Product | null>(null);
   const [imgText, setImgText] = useState("");
+  const [mediaError, setMediaError] = useState("");
+  const mediaInput = useRef<HTMLInputElement>(null);
 
   const edit = (p: Product) => {
     setDraft({ ...p });
@@ -93,6 +99,28 @@ function ProductManager() {
   const startNew = () => {
     setDraft(blank());
     setImgText("");
+  };
+
+  const addMediaFiles = async (files: FileList | null) => {
+    if (!files) return;
+    setMediaError("");
+    const selected = Array.from(files).slice(0, 4);
+    if (selected.some((file) => file.size > 900_000)) {
+      setMediaError("প্রতি ছবি বা ভিডিও 900KB-এর মধ্যে রাখুন, তাহলে স্টোর দ্রুত থাকবে।");
+      return;
+    }
+    const encoded = await Promise.all(
+      selected.map(
+        (file) =>
+          new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(String(reader.result ?? ""));
+            reader.onerror = () => reject(new Error("Media read failed"));
+            reader.readAsDataURL(file);
+          }),
+      ),
+    );
+    setImgText((current) => [current.trim(), ...encoded].filter(Boolean).join("\n"));
   };
 
   const submit = (e: React.FormEvent) => {
@@ -161,20 +189,38 @@ function ProductManager() {
                 value={draft.category}
                 onChange={(e) => setDraft({ ...draft, category: e.target.value as Category })}
               >
+                <option value="keychain">Keychain</option>
                 <option value="flag">Flag</option>
-                <option value="keychain">Keychain stuff</option>
               </select>
             </label>
           </div>
           <label className="block text-sm font-semibold">
-            Image URLs * (এক লাইনে একটি)
+            Product ছবি / ভিডিও *
             <textarea
               className={field}
               rows={3}
               value={imgText}
               onChange={(e) => setImgText(e.target.value)}
+              placeholder="Media URL দিন, অথবা নিচ থেকে upload করুন"
             />
           </label>
+          <input
+            ref={mediaInput}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,video/mp4,video/webm"
+            multiple
+            className="sr-only"
+            onChange={(event) => void addMediaFiles(event.target.files)}
+          />
+          <button
+            type="button"
+            onClick={() => mediaInput.current?.click()}
+            className="brutal-sm press flex min-h-11 items-center gap-2 bg-card px-3 py-2 text-sm font-bold"
+          >
+            <ImagePlus size={18} aria-hidden /> ছবি / ভিডিও Upload
+          </button>
+          <p className="text-xs text-muted-foreground">সর্বোচ্চ ৪টি, প্রতি ফাইল 900KB। প্রথম media-টি product cover হবে।</p>
+          {mediaError && <p className="text-xs font-semibold text-destructive">{mediaError}</p>}
           <label className="block text-sm font-semibold">
             Description
             <textarea
@@ -207,23 +253,32 @@ function ProductManager() {
       )}
 
       <ul className="mt-4 space-y-2">
-        {products.map((p) => (
+        {products.map((p, index) => (
           <li key={p.id} className="brutal-sm flex items-center gap-3 rounded-2xl bg-brand-wash p-2">
-            <img src={p.images[0]} alt="" className="h-12 w-12 rounded-xl border-2 border-ink object-cover" />
+            <ProductMedia src={p.images[0]} alt={p.title} className="h-12 w-12 rounded-xl border-2 border-ink object-cover" />
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-bold">{p.title}</p>
               <p className="text-xs text-muted-foreground">
                 {p.sku} · {taka(p.price)} · {p.category} · {p.inStock ? "in stock" : "stock out"}
               </p>
             </div>
+            <div className="flex shrink-0 flex-col gap-1">
+              <button type="button" disabled={index === 0} aria-label={`${p.title} উপরে নিন`} onClick={() => moveProduct(p.id, -1)} className="grid h-7 w-7 place-items-center border-2 border-ink bg-card disabled:opacity-25">
+                <ChevronUp size={15} />
+              </button>
+              <button type="button" disabled={index === products.length - 1} aria-label={`${p.title} নিচে নিন`} onClick={() => moveProduct(p.id, 1)} className="grid h-7 w-7 place-items-center border-2 border-ink bg-card disabled:opacity-25">
+                <ChevronDown size={15} />
+              </button>
+            </div>
             <button onClick={() => edit(p)} className="text-xs font-bold underline">
               Edit
             </button>
             <button
               onClick={() => deleteProduct(p.id)}
-              className="text-xs font-bold text-destructive underline"
+              aria-label={`${p.title} delete করুন`}
+              className="grid h-9 w-9 place-items-center text-destructive"
             >
-              Delete
+              <Trash2 size={18} />
             </button>
           </li>
         ))}

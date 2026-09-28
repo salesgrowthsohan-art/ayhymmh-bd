@@ -6,13 +6,13 @@ import { useStore, type Category } from "@/lib/store";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "চাবির গোছা — Cute Keychain Store in Bangladesh" },
+      { title: "ayhymmh — Premium Keychain & Flag Store Bangladesh" },
       {
         name: "description",
         content:
           "Flag keychain আর cute keychain stuff, ৳100 থেকে। Free delivery badge, bKash বা Cash on Delivery, Dhaka-তে ১–২ দিনে delivery।",
       },
-      { property: "og:title", content: "চাবির গোছা — Cute Keychain Store" },
+      { property: "og:title", content: "ayhymmh — Premium Keychain & Flag Store" },
       {
         property: "og:description",
         content: "Flag ও keychain stuff — WhatsApp এ অর্ডার করুন, Dhaka-তে ১–২ দিনে delivery।",
@@ -114,13 +114,14 @@ function Home() {
 
       {/* Grid */}
       <section className="mt-6 grid grid-cols-2 gap-4 pb-4 sm:gap-6 md:grid-cols-3">
-        {list.map((p) => (
+        {list.map((p, index) => (
           <ProductCard
             key={p.id}
             product={p}
             onAdd={add}
             quantity={cart.find((line) => line.sku === p.sku)?.qty ?? 0}
             onSetQuantity={setQty}
+            priority={index < 4}
           />
         ))}
       </section>
