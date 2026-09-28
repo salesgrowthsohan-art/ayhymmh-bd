@@ -143,6 +143,7 @@ type StoreValue = {
   clearCart: () => void;
   saveProduct: (p: Product) => void;
   deleteProduct: (id: string) => void;
+  moveProduct: (id: string, direction: -1 | 1) => void;
   saveSettings: (s: Partial<Settings>) => void;
   login: (password: string) => boolean;
   logout: () => void;
@@ -215,6 +216,18 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           list.some((x) => x.id === p.id) ? list.map((x) => (x.id === p.id ? p : x)) : [p, ...list],
         ),
       deleteProduct: (id) => setProducts((list) => list.filter((x) => x.id !== id)),
+      moveProduct: (id, direction) =>
+        setProducts((list) => {
+          const from = list.findIndex((product) => product.id === id);
+          const to = from + direction;
+          if (from < 0 || to < 0 || to >= list.length) return list;
+          const next = [...list];
+          const moved = next[from];
+          if (!moved) return list;
+          next.splice(from, 1);
+          next.splice(to, 0, moved);
+          return next;
+        }),
       saveSettings: (s) => setSettings((old) => ({ ...old, ...s })),
       login: (password) => {
         const ok = password === settings.adminPassword;

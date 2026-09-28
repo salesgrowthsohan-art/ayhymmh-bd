@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { useStore } from "@/lib/store";
 import { CartSheet } from "./CartSheet";
+import { MessageCircle, ShoppingBag } from "lucide-react";
 
 const UiContext = createContext<{ openCart: () => void }>({ openCart: () => {} });
 export const useUi = () => useContext(UiContext);
@@ -12,17 +13,17 @@ function Header({ onCart }: { onCart: () => void }) {
     <header className="sticky top-0 z-40 glass border-b-2 border-ink">
       <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3">
         <Link to="/" className="font-display text-xl font-bold tracking-tight sm:text-2xl">
-          চাবির গোছা
+          ayhymmh
         </Link>
         <span className="hidden rounded-full bg-brand-soft px-2 py-0.5 text-[11px] font-semibold sm:inline">
-          Keychain Store · BD
+          KEYCHAIN + FLAG · BD
         </span>
         <button
           onClick={onCart}
           aria-label={`Cart, ${cartCount} items`}
           className="brutal-sm press relative ml-auto rounded-full bg-brand px-3 py-2 text-sm font-bold text-ink"
         >
-          🛍️ Cart
+          <ShoppingBag className="inline-block" size={17} aria-hidden /> Cart
           {cartCount > 0 && (
             <span className="absolute -right-2 -top-2 grid h-6 min-w-6 place-items-center rounded-full border-2 border-ink bg-white px-1 text-xs font-bold">
               {cartCount}
@@ -38,7 +39,7 @@ function Footer() {
   return (
     <footer className="mt-16 border-t-2 border-ink bg-brand-wash">
       <div className="mx-auto max-w-6xl px-4 py-8 text-sm">
-        <p className="font-display text-lg font-bold">চাবির গোছা</p>
+        <p className="font-display text-lg font-bold">ayhymmh</p>
         <p className="mt-1 text-muted-foreground">
           Dhaka-তে ১–২ দিনের delivery · Payment: bKash বা Cash on Delivery
         </p>
@@ -61,13 +62,13 @@ function WhatsAppFab() {
   const { waLink } = useStore();
   return (
     <a
-      href={waLink("হ্যালো! চাবির গোছা — আমি একটা keychain সম্পর্কে জানতে চাই।")}
+      href={waLink("হ্যালো! ayhymmh — আমি একটি product সম্পর্কে জানতে চাই।")}
       target="_blank"
       rel="noreferrer"
       aria-label="WhatsApp এ যোগাযোগ করুন"
-      className="brutal press fixed bottom-5 right-4 z-40 grid h-14 w-14 place-items-center rounded-full bg-[oklch(0.72_0.17_150)] text-2xl"
+      className="brutal press fixed bottom-5 right-4 z-40 grid h-14 w-14 place-items-center rounded-full bg-success text-success-foreground"
     >
-      💬
+      <MessageCircle size={26} strokeWidth={2.5} aria-hidden />
     </a>
   );
 }
