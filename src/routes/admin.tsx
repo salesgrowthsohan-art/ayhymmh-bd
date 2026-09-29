@@ -105,8 +105,9 @@ function ProductManager() {
     if (!files) return;
     setMediaError("");
     const selected = Array.from(files).slice(0, 4);
-    if (selected.some((file) => file.size > 900_000)) {
-      setMediaError("প্রতি ছবি বা ভিডিও 900KB-এর মধ্যে রাখুন, তাহলে স্টোর দ্রুত থাকবে।");
+    const totalSize = selected.reduce((sum, file) => sum + file.size, 0);
+    if (selected.some((file) => file.size > 800_000) || totalSize > 1_800_000) {
+      setMediaError("প্রতি file 800KB এবং সব মিলিয়ে 1.8MB-এর মধ্যে রাখুন, তাহলে স্টোর দ্রুত থাকবে।");
       return;
     }
     const encoded = await Promise.all(
@@ -219,7 +220,7 @@ function ProductManager() {
           >
             <ImagePlus size={18} aria-hidden /> ছবি / ভিডিও Upload
           </button>
-          <p className="text-xs text-muted-foreground">সর্বোচ্চ ৪টি, প্রতি ফাইল 900KB। প্রথম media-টি product cover হবে।</p>
+          <p className="text-xs text-muted-foreground">সর্বোচ্চ ৪টি, সব মিলিয়ে 1.8MB। প্রথম media-টি product cover হবে।</p>
           {mediaError && <p className="text-xs font-semibold text-destructive">{mediaError}</p>}
           <label className="block text-sm font-semibold">
             Description

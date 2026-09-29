@@ -64,7 +64,7 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
         <div className="no-scrollbar flex-1 overflow-y-auto px-4 py-4">
           {!lines.length ? (
             <p className="py-10 text-center text-sm text-muted-foreground">
-              কার্ট খালি — একটা keychain যোগ করুন 🩷
+              কার্ট খালি — একটি Keychain বা Flag যোগ করুন
             </p>
           ) : (
             <ul className="space-y-3">

@@ -1,5 +1,5 @@
 type ProductMediaProps = {
-  src?: string;
+  src?: string | undefined;
   alt: string;
   className?: string;
   loading?: "eager" | "lazy";

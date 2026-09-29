@@ -87,7 +87,7 @@ function ProductDetail() {
           <h1 className="mt-3 text-2xl font-bold sm:text-3xl">{product.title}</h1>
           <p className="mt-1 text-sm text-muted-foreground">{product.sku}</p>
           <p className="mt-3 font-display text-3xl font-bold">{taka(product.price)}</p>
-          <p className={`mt-1 text-sm font-bold ${product.inStock ? "text-[oklch(0.55_0.15_150)]" : "text-destructive"}`}>
+          <p className={`mt-1 text-sm font-bold ${product.inStock ? "text-success" : "text-destructive"}`}>
             {product.inStock ? "✅ In stock" : "❌ Stock out"}
           </p>
 

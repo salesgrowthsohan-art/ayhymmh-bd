@@ -189,9 +189,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const setQty = useCallback((sku: string, qty: number) => {
-    setCart((c) =>
-      qty <= 0 ? c.filter((l) => l.sku !== sku) : c.map((l) => (l.sku === sku ? { ...l, qty } : l)),
-    );
+    setCart((current) => {
+      if (qty <= 0) return current.filter((line) => line.sku !== sku);
+      if (current.some((line) => line.sku === sku)) {
+        return current.map((line) => (line.sku === sku ? { ...line, qty } : line));
+      }
+      return [...current, { sku, qty }];
+    });
   }, []);
 
   const value = useMemo<StoreValue>(() => {
