@@ -46,7 +46,7 @@ function ProductDetail() {
     const msg = [
       "🛍️ New Order from Website",
       "",
-      `1. ${product.title} (${product.sku}) × 1 — ${taka(product.price)}`,
+      `1. ${product.title} × 1 — ${taka(product.price)}`,
       "",
       "👤 Name: ",
       "📞 Phone: ",
@@ -85,7 +85,6 @@ function ProductDetail() {
             {product.category}
           </span>
           <h1 className="mt-3 text-2xl font-bold sm:text-3xl">{product.title}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">{product.sku}</p>
           <p className="mt-3 font-display text-3xl font-bold">{taka(product.price)}</p>
           <p className={`mt-1 text-sm font-bold ${product.inStock ? "text-success" : "text-destructive"}`}>
             {product.inStock ? "✅ In stock" : "❌ Stock out"}
