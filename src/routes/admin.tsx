@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { ChevronDown, ChevronUp, ImagePlus, Trash2 } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ChevronDown, ChevronUp, Home, ImagePlus, Trash2 } from "lucide-react";
 import { useRef, useState } from "react";
 import { ProductMedia } from "@/components/ProductMedia";
 import { taka, useStore, type Category, type Product } from "@/lib/store";
@@ -67,6 +67,12 @@ function Admin() {
             Login
           </button>
         </form>
+        <Link
+          to="/"
+          className="brutal-sm press mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-4 py-2.5 font-bold"
+        >
+          <Home size={18} aria-hidden /> হোমে ফিরে যান
+        </Link>
       </div>
     );
   }
