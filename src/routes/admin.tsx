@@ -67,6 +67,12 @@ function Admin() {
             Login
           </button>
         </form>
+        <Link
+          to="/"
+          className="brutal-sm press mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-4 py-2.5 font-bold"
+        >
+          <Home size={18} aria-hidden /> হোমে ফিরে যান
+        </Link>
       </div>
     );
   }
