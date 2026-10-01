@@ -25,7 +25,7 @@ export const Route = createFileRoute("/product/$sku")({
 
 function ProductDetail() {
   const { sku } = Route.useParams();
-  const { products, addToCart, waLink, hydrated } = useStore();
+  const { products, settings, addToCart, waLink, hydrated } = useStore();
   const { openCart } = useUi();
   const product = products.find((p) => p.sku === sku);
 
@@ -43,10 +43,15 @@ function ProductDetail() {
   }
 
   const orderNow = () => {
+    const delivery = settings.deliveryCharge;
     const msg = [
       "🛍️ New Order from Website",
       "",
       `1. ${product.title} × 1 — ${taka(product.price)}`,
+      "",
+      `Subtotal: ${taka(product.price)}`,
+      `Delivery: ${delivery > 0 ? taka(delivery) : "Free"}`,
+      `Total (delivery সহ): ${taka(product.price + delivery)}`,
       "",
       "👤 Name: ",
       "📞 Phone: ",
@@ -93,7 +98,6 @@ function ProductDetail() {
           <p className="mt-4 text-sm leading-relaxed">{product.description}</p>
 
           <div className="mt-4 flex flex-wrap gap-2 text-xs font-bold">
-            <span className="brutal-sm rounded-full bg-brand-wash px-3 py-1">🚚 Free delivery</span>
             <span className="brutal-sm rounded-full bg-white px-3 py-1">bKash / Cash on Delivery</span>
             <span className="brutal-sm rounded-full bg-white px-3 py-1">Dhaka-তে ১–২ দিন</span>
           </div>

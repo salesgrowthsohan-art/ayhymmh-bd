@@ -298,6 +298,7 @@ function StoreSettings() {
   const { settings, saveSettings } = useStore();
   const [wa, setWa] = useState(settings.whatsapp);
   const [fee, setFee] = useState(String(settings.deliveryCharge));
+  const [freeDelivery, setFreeDelivery] = useState(settings.deliveryCharge === 0);
   const [pw1, setPw1] = useState("");
   const [pw2, setPw2] = useState("");
   const [msg, setMsg] = useState("");
@@ -317,15 +318,24 @@ function StoreSettings() {
             min={0}
             className={field}
             value={fee}
+            disabled={freeDelivery}
             onChange={(e) => setFee(e.target.value)}
           />
         </label>
       </div>
+      <label className="mt-3 flex items-center gap-2 text-sm font-semibold">
+        <input
+          type="checkbox"
+          checked={freeDelivery}
+          onChange={(e) => setFreeDelivery(e.target.checked)}
+        />
+        Free home delivery চালু করুন (delivery charge ৳0 হবে)
+      </label>
       <button
         onClick={() => {
           saveSettings({
             whatsapp: wa.trim() || settings.whatsapp,
-            deliveryCharge: Math.max(0, Number(fee) || 0),
+            deliveryCharge: freeDelivery ? 0 : Math.max(0, Number(fee) || 0),
           });
           setMsg("সেভ হয়েছে ✅");
         }}

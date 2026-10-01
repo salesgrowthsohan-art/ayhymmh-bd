@@ -10,7 +10,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Flag keychain আর cute keychain stuff, ৳100 থেকে। Free delivery badge, bKash বা Cash on Delivery, Dhaka-তে ১–২ দিনে delivery।",
+          "Flag keychain আর cute keychain stuff। bKash বা Cash on Delivery, Dhaka-তে ১–২ দিনে delivery।",
       },
       { property: "og:title", content: "ayhymmh — Premium Keychain & Flag Store" },
       {
@@ -113,7 +113,7 @@ function Home() {
       </section>
 
       {/* Grid */}
-      <section className="mt-6 grid grid-cols-2 gap-4 pb-4 sm:gap-6 md:grid-cols-3">
+      <section className="mt-6 grid grid-cols-1 gap-5 pb-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
         {list.map((p, index) => (
           <ProductCard
             key={p.id}
