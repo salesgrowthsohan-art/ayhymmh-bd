@@ -64,7 +64,7 @@ function Home() {
             </h1>
           </div>
           <div className="border-3 border-ink bg-ink p-4 text-primary-foreground shadow-[6px_6px_0_0_var(--brand)]">
-            <p className="text-sm font-bold leading-relaxed">Premium keychain আর flag collection — ৳100 থেকে। Dhaka-তে ১–২ দিনের delivery.</p>
+            <p className="text-sm font-bold leading-relaxed">Premium keychain আর flag collection। Dhaka-তে ১–২ দিনের delivery.</p>
           </div>
         </div>
         <div className="mt-5 flex flex-wrap gap-3">
@@ -93,7 +93,7 @@ function Home() {
           value={q}
           onChange={(e) => setQ(e.target.value)}
           maxLength={60}
-          placeholder="Search keychain বা SKU…"
+          placeholder="Search keychain বা flag…"
           aria-label="Search products"
           className="brutal-sm w-full bg-card px-4 py-3 text-sm outline-none focus:shadow-[4px_4px_0_0_var(--brand)]"
         />

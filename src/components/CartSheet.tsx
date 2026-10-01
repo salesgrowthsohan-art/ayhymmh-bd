@@ -31,7 +31,7 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
       "",
       ...lines.map(
         (l, i) =>
-          `${i + 1}. ${l.product.title} (${l.product.sku}) × ${l.qty} — ${taka(l.product.price * l.qty)}`,
+          `${i + 1}. ${l.product.title} × ${l.qty} — ${taka(l.product.price * l.qty)}`,
       ),
       "",
       `Subtotal: ${taka(subtotal)}`,
@@ -77,9 +77,7 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
                   />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-bold">{l.product.title}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {l.product.sku} · {taka(l.product.price)}
-                    </p>
+                    <p className="text-xs text-muted-foreground">{taka(l.product.price)}</p>
                     <div className="mt-2 flex items-center gap-2">
                       <button
                         aria-label="কমান"
