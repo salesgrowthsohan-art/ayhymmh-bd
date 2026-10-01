@@ -35,8 +35,8 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
       ),
       "",
       `Subtotal: ${taka(subtotal)}`,
-      `Delivery: ${taka(settings.deliveryCharge)}`,
-      `Grand Total: ${taka(total)}`,
+      `Delivery: ${settings.deliveryCharge > 0 ? taka(settings.deliveryCharge) : "Free"}`,
+      `Total (delivery সহ): ${taka(total)}`,
       "",
       `👤 Name: ${form.name.trim()}`,
       `📞 Phone: ${form.phone.trim()}`,
@@ -116,10 +116,12 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
                 </div>
                 <div className="flex justify-between">
                   <dt>Delivery Charge</dt>
-                  <dd className="font-semibold">{taka(settings.deliveryCharge)}</dd>
+                  <dd className="font-semibold">
+                    {settings.deliveryCharge > 0 ? taka(settings.deliveryCharge) : "Free"}
+                  </dd>
                 </div>
                 <div className="flex justify-between text-base font-bold">
-                  <dt>Grand Total</dt>
+                  <dt>Total (delivery সহ)</dt>
                   <dd>{taka(total)}</dd>
                 </div>
               </dl>
