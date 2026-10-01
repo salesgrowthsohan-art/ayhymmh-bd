@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { ChevronDown, ChevronUp, ImagePlus, Trash2 } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ChevronDown, ChevronUp, Home, ImagePlus, Trash2 } from "lucide-react";
 import { useRef, useState } from "react";
 import { ProductMedia } from "@/components/ProductMedia";
 import { taka, useStore, type Category, type Product } from "@/lib/store";
