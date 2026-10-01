@@ -47,8 +47,7 @@ export function ProductCard({
         <Link to="/product/$sku" params={{ sku: product.sku }} className="line-clamp-2 min-h-10 text-sm font-bold leading-snug sm:text-base">
           {product.title}
         </Link>
-        <div className="mt-2 flex items-center justify-between gap-2">
-          <p className="text-[11px] font-bold text-muted-foreground">{product.sku}</p>
+        <div className="mt-2 flex items-center justify-end gap-2">
           <p className="font-display text-lg font-bold">{taka(product.price)}</p>
         </div>
 
