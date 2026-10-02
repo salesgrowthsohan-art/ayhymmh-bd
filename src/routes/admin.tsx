@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronDown, ChevronUp, Home, ImagePlus, Trash2 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ProductMedia } from "@/components/ProductMedia";
-import { taka, useStore, type Category, type Product } from "@/lib/store";
+import { categoryLabel, taka, useStore, type Category, type Product } from "@/lib/store";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -38,14 +38,49 @@ function Admin() {
   const { isAdmin, login, logout } = useStore();
   const [pw, setPw] = useState("");
   const [err, setErr] = useState("");
+  const [fails, setFails] = useState(0);
+  const [lockedUntil, setLockedUntil] = useState(0);
+
+  // Auto-logout after 5 minutes of inactivity
+  useEffect(() => {
+    if (!isAdmin) return;
+    const IDLE_MS = 5 * 60_000;
+    let timer = window.setTimeout(logout, IDLE_MS);
+    const reset = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(logout, IDLE_MS);
+    };
+    const events = ["pointerdown", "keydown", "wheel", "touchstart"] as const;
+    for (const e of events) window.addEventListener(e, reset, { passive: true });
+    return () => {
+      window.clearTimeout(timer);
+      for (const e of events) window.removeEventListener(e, reset);
+    };
+  }, [isAdmin, logout]);
+
 
   if (!isAdmin) {
+    const locked = Date.now() < lockedUntil;
     return (
       <div className="mx-auto max-w-sm px-4 py-16">
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            if (!login(pw)) setErr("ভুল পাসওয়ার্ড");
+            if (locked) {
+              setErr("অনেকবার ভুল হয়েছে — কিছুক্ষণ পর আবার চেষ্টা করুন");
+              return;
+            }
+            if (!login(pw)) {
+              const next = fails + 1;
+              setFails(next);
+              if (next >= 5) {
+                setLockedUntil(Date.now() + 30_000);
+                setFails(0);
+                setErr("৫ বার ভুল পাসওয়ার্ড — ৩০ সেকেন্ডের জন্য লক");
+              } else {
+                setErr("ভুল পাসওয়ার্ড");
+              }
+            }
           }}
           className={card}
         >
@@ -56,6 +91,7 @@ function Admin() {
               type="password"
               className={field}
               value={pw}
+              disabled={locked}
               onChange={(e) => {
                 setPw(e.target.value);
                 setErr("");
@@ -92,7 +128,7 @@ function Admin() {
 }
 
 function ProductManager() {
-  const { products, saveProduct, deleteProduct, moveProduct } = useStore();
+  const { products, settings, saveProduct, deleteProduct, moveProduct } = useStore();
   const [draft, setDraft] = useState<Product | null>(null);
   const [imgText, setImgText] = useState("");
   const [mediaError, setMediaError] = useState("");
@@ -193,11 +229,14 @@ function ProductManager() {
               Category *
               <select
                 className={field}
-                value={draft.category}
+                value={settings.categories.includes(draft.category) ? draft.category : settings.categories[0]}
                 onChange={(e) => setDraft({ ...draft, category: e.target.value as Category })}
               >
-                <option value="keychain">Keychain</option>
-                <option value="flag">Flag</option>
+                {settings.categories.map((c) => (
+                  <option key={c} value={c}>
+                    {categoryLabel(c)}
+                  </option>
+                ))}
               </select>
             </label>
           </div>
@@ -295,13 +334,23 @@ function ProductManager() {
 }
 
 function StoreSettings() {
-  const { settings, saveSettings } = useStore();
+  const { settings, products, saveSettings } = useStore();
   const [wa, setWa] = useState(settings.whatsapp);
   const [fee, setFee] = useState(String(settings.deliveryCharge));
   const [freeDelivery, setFreeDelivery] = useState(settings.deliveryCharge === 0);
+  const [newCat, setNewCat] = useState("");
   const [pw1, setPw1] = useState("");
   const [pw2, setPw2] = useState("");
   const [msg, setMsg] = useState("");
+
+  const addCategory = () => {
+    const c = newCat.trim().toLowerCase();
+    if (!c) return;
+    if (settings.categories.includes(c)) return setMsg("এই section আগেই আছে");
+    saveSettings({ categories: [...settings.categories, c] });
+    setNewCat("");
+    setMsg(`"${categoryLabel(c)}" section যোগ হয়েছে ✅`);
+  };
 
   return (
     <section className={card}>
@@ -343,6 +392,61 @@ function StoreSettings() {
       >
         Save settings
       </button>
+
+      <div className="mt-6 border-t-2 border-dashed border-ink/30 pt-4">
+        <h3 className="text-sm font-bold">Product sections (categories)</h3>
+        <p className="mt-1 text-xs text-muted-foreground">
+          নতুন section খুললে সেখানে প্রোডাক্ট upload করা যাবে — ছবি বা সাউন্ড সহ ভিডিও।
+        </p>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {settings.categories.map((c) => {
+            const used = products.some((p) => p.category === c);
+            return (
+              <span
+                key={c}
+                className="brutal-sm flex items-center gap-1.5 bg-card px-2.5 py-1.5 text-xs font-bold"
+              >
+                {categoryLabel(c)}
+                {!used && (
+                  <button
+                    type="button"
+                    aria-label={`${categoryLabel(c)} section মুছুন`}
+                    onClick={() => {
+                      saveSettings({ categories: settings.categories.filter((x) => x !== c) });
+                      setMsg(`"${categoryLabel(c)}" section মুছে ফেলা হয়েছে`);
+                    }}
+                    className="text-destructive"
+                  >
+                    ×
+                  </button>
+                )}
+              </span>
+            );
+          })}
+        </div>
+        <div className="mt-2 flex gap-2">
+          <input
+            className={field}
+            value={newCat}
+            maxLength={30}
+            placeholder="নতুন section-এর নাম (যেমন Face Mask)"
+            onChange={(e) => setNewCat(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                addCategory();
+              }
+            }}
+          />
+          <button
+            type="button"
+            onClick={addCategory}
+            className="brutal-sm press shrink-0 rounded-2xl bg-card px-4 py-2 font-bold"
+          >
+            + Section
+          </button>
+        </div>
+      </div>
 
       <div className="mt-6 border-t-2 border-dashed border-ink/30 pt-4">
         <h3 className="text-sm font-bold">Change admin password</h3>

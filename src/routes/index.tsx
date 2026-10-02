@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { ProductCard } from "@/components/ProductCard";
-import { useStore, type Category } from "@/lib/store";
+import { categoryLabel, useStore, type Category } from "@/lib/store";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -24,16 +24,18 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-const TABS: { key: Category | "all"; label: string }[] = [
-  { key: "all", label: "সব" },
-  { key: "flag", label: "Flag" },
-  { key: "keychain", label: "Keychain" },
-];
+function tabsFor(categories: string[]): { key: Category | "all"; label: string }[] {
+  return [
+    { key: "all", label: "সব" },
+    ...categories.map((c) => ({ key: c as Category, label: categoryLabel(c) })),
+  ];
+}
 
 function Home() {
-  const { products, cart, addToCart, setQty, waLink } = useStore();
+  const { products, settings, cart, addToCart, setQty, waLink } = useStore();
   const [tab, setTab] = useState<Category | "all">("all");
   const [q, setQ] = useState("");
+  const TABS = useMemo(() => tabsFor(settings.categories), [settings.categories]);
 
   const list = useMemo(() => {
     const needle = q.trim().toLowerCase();

@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from "react";
 
-export type Category = "flag" | "keychain";
+export type Category = "flag" | "keychain" | (string & {});
 
 export type Product = {
   id: string;
@@ -25,6 +25,7 @@ export type Settings = {
   whatsapp: string;
   deliveryCharge: number;
   adminPassword: string;
+  categories: string[];
 };
 
 export type CartLine = { sku: string; qty: number };
@@ -40,6 +41,7 @@ export const DEFAULT_SETTINGS: Settings = {
   whatsapp: "01630871105",
   deliveryCharge: 60,
   adminPassword: "1240928",
+  categories: ["flag", "keychain", "face mask", "miniature"],
 };
 
 const U = (id: string) =>
@@ -257,3 +259,6 @@ export function useStore() {
 }
 
 export const taka = (n: number) => `৳${n.toLocaleString("en-US")}`;
+
+export const categoryLabel = (c: string) =>
+  c.charAt(0).toUpperCase() + c.slice(1);

@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, Minus, Plus, ShoppingBag } from "lucide-react";
 import { ProductMedia } from "@/components/ProductMedia";
-import { taka, type Product } from "@/lib/store";
+import { categoryLabel, taka, type Product } from "@/lib/store";
 
 export function ProductCard({
   product,
@@ -40,7 +40,7 @@ export function ProductCard({
           </span>
         )}
         <span className="absolute bottom-2 left-2 border-2 border-ink bg-card px-2 py-1 text-[10px] font-bold uppercase">
-          {product.category === "flag" ? "Flag" : "Keychain"}
+          {categoryLabel(product.category)}
         </span>
       </Link>
       <div className="flex flex-1 flex-col p-3 sm:p-4">
