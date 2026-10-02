@@ -38,6 +38,26 @@ function Admin() {
   const { isAdmin, login, logout } = useStore();
   const [pw, setPw] = useState("");
   const [err, setErr] = useState("");
+  const [fails, setFails] = useState(0);
+  const [lockedUntil, setLockedUntil] = useState(0);
+
+  // Auto-logout after 5 minutes of inactivity
+  useEffect(() => {
+    if (!isAdmin) return;
+    const IDLE_MS = 5 * 60_000;
+    let timer = window.setTimeout(logout, IDLE_MS);
+    const reset = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(logout, IDLE_MS);
+    };
+    const events = ["pointerdown", "keydown", "wheel", "touchstart"] as const;
+    for (const e of events) window.addEventListener(e, reset, { passive: true });
+    return () => {
+      window.clearTimeout(timer);
+      for (const e of events) window.removeEventListener(e, reset);
+    };
+  }, [isAdmin, logout]);
+
 
   if (!isAdmin) {
     return (
