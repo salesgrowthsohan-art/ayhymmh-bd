@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useUi } from "@/components/Shell";
 import { ProductMedia } from "@/components/ProductMedia";
-import { taka, useStore } from "@/lib/store";
+import { categoryLabel, taka, useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/product/$sku")({
   head: ({ params }) => ({
@@ -77,6 +77,7 @@ function ProductDetail() {
                 src={src}
                 alt={`${product.title} — ছবি ${i + 1}`}
                 className="aspect-square w-full shrink-0 snap-center object-cover"
+                controls
               />
             ))}
           </div>
@@ -87,7 +88,7 @@ function ProductDetail() {
 
         <div className="rise">
           <span className="rounded-full border-2 border-ink bg-brand-soft px-2 py-0.5 text-[11px] font-bold capitalize">
-            {product.category}
+            {categoryLabel(product.category)}
           </span>
           <h1 className="mt-3 text-2xl font-bold sm:text-3xl">{product.title}</h1>
           <p className="mt-3 font-display text-3xl font-bold">{taka(product.price)}</p>
