@@ -66,7 +66,21 @@ function Admin() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            if (!login(pw)) setErr("ভুল পাসওয়ার্ড");
+            if (locked) {
+              setErr("অনেকবার ভুল হয়েছে — কিছুক্ষণ পর আবার চেষ্টা করুন");
+              return;
+            }
+            if (!login(pw)) {
+              const next = fails + 1;
+              setFails(next);
+              if (next >= 5) {
+                setLockedUntil(Date.now() + 30_000);
+                setFails(0);
+                setErr("৫ বার ভুল পাসওয়ার্ড — ৩০ সেকেন্ডের জন্য লক");
+              } else {
+                setErr("ভুল পাসওয়ার্ড");
+              }
+            }
           }}
           className={card}
         >
@@ -77,6 +91,7 @@ function Admin() {
               type="password"
               className={field}
               value={pw}
+              disabled={locked}
               onChange={(e) => {
                 setPw(e.target.value);
                 setErr("");
