@@ -61,6 +61,7 @@ function Admin() {
 
   if (!isAdmin) {
     const locked = Date.now() < lockedUntil;
+    return (
       <div className="mx-auto max-w-sm px-4 py-16">
         <form
           onSubmit={(e) => {
