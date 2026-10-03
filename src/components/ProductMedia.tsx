@@ -50,5 +50,14 @@ export function ProductMedia({
     );
   }
 
-  return <img src={src} alt={alt} loading={loading} decoding="async" className={className} />;
+  return (
+    <img
+      src={src}
+      alt={alt}
+      loading={loading}
+      decoding="async"
+      fetchPriority={loading === "eager" ? "high" : undefined}
+      className={className}
+    />
+  );
 }
