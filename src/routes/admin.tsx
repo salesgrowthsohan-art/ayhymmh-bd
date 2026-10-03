@@ -305,8 +305,16 @@ function ProductManager() {
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-bold">{p.title}</p>
               <p className="text-xs text-muted-foreground">
-                {p.sku} · {taka(p.price)} · {p.category} · {p.inStock ? "in stock" : "stock out"}
+                {taka(p.price)} · {p.category}
               </p>
+              <button
+                type="button"
+                onClick={() => saveProduct({ ...p, inStock: !p.inStock })}
+                aria-pressed={!p.inStock}
+                className={`press mt-1 border-2 border-ink px-2 py-0.5 text-[11px] font-bold uppercase ${p.inStock ? "bg-success text-success-foreground" : "bg-destructive text-destructive-foreground"}`}
+              >
+                {p.inStock ? "✅ In stock — tap for Stock out" : "❌ Stock out — tap for In stock"}
+              </button>
             </div>
             <div className="flex shrink-0 flex-col gap-1">
               <button type="button" disabled={index === 0} aria-label={`${p.title} উপরে নিন`} onClick={() => moveProduct(p.id, -1)} className="grid h-7 w-7 place-items-center border-2 border-ink bg-card disabled:opacity-25">
