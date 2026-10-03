@@ -148,6 +148,10 @@
   --sidebar-ring: oklch(0.551 0.027 264.364);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
@@ -236,8 +240,8 @@
 }
 
 @utility glass {
-  background: color-mix(in oklab, white 72%, transparent);
-  backdrop-filter: blur(14px) saturate(140%);
+  background: color-mix(in oklab, white 78%, transparent);
+  backdrop-filter: blur(8px) saturate(140%);
 }
 
 @utility no-scrollbar {
