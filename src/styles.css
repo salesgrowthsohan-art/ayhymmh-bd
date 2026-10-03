@@ -26,6 +26,7 @@
   --color-brand-wash: var(--brand-wash);
   --color-ink: var(--ink);
   --color-signal: var(--signal);
+  --color-pop: var(--pop);
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
   --radius-sm: calc(var(--radius) - 4px);
@@ -77,6 +78,7 @@
   --brand-wash: oklch(0.97 0.025 5);
   --ink: oklch(0.16 0.015 285);
   --signal: oklch(0.67 0.21 255);
+  --pop: oklch(0.87 0.16 95);
   --success: oklch(0.7 0.18 150);
   --success-foreground: oklch(0.14 0.02 150);
   --background: oklch(0.965 0.006 285);
@@ -226,6 +228,33 @@ html {
 
 @utility quantity-badge {
   animation: quantity-pop 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-3deg);
+  }
+  50% {
+    transform: translateY(-14px) rotate(3deg);
+  }
+}
+
+@utility floaty {
+  animation: floaty 4s ease-in-out infinite;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@utility marquee-track {
+  animation: marquee 16s linear infinite;
 }
 
 @utility press {
