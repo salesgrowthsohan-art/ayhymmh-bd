@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 type ProductMediaProps = {
   src?: string | undefined;
   alt: string;
@@ -19,7 +21,13 @@ export function ProductMedia({
   loading = "lazy",
   controls = false,
 }: ProductMediaProps) {
-  if (!src) {
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    setFailed(false);
+  }, [src]);
+
+  if (!src || failed) {
     return <div className={`${className ?? ""} grid place-items-center bg-brand-wash text-xs font-bold`}>NO MEDIA</div>;
   }
 
@@ -33,6 +41,7 @@ export function ProductMedia({
           controls
           playsInline
           preload="metadata"
+          onError={() => setFailed(true)}
         />
       );
     }
@@ -45,7 +54,8 @@ export function ProductMedia({
         loop
         playsInline
         autoPlay
-        preload="metadata"
+        preload="none"
+        onError={() => setFailed(true)}
       />
     );
   }
@@ -57,6 +67,7 @@ export function ProductMedia({
       loading={loading}
       decoding="async"
       fetchPriority={loading === "eager" ? "high" : undefined}
+      onError={() => setFailed(true)}
       className={className}
     />
   );
