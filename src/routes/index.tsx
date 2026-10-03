@@ -58,10 +58,7 @@ function Home() {
       <section className="hero-wave rise mt-4 overflow-hidden border-4 border-ink bg-brand-wash p-5 sm:mt-6 sm:p-8">
         <div className="grid items-end gap-5 sm:grid-cols-[1.5fr_0.7fr]">
           <div>
-            <p className="inline-block border-2 border-ink bg-card px-2.5 py-1 text-[11px] font-bold uppercase">
-              Keychain + Flag / Bangladesh
-            </p>
-            <h1 className="mt-3 text-4xl font-bold uppercase leading-[0.92] sm:text-6xl">
+            <h1 className="text-4xl font-bold uppercase leading-[0.92] sm:text-6xl">
               Pick it.<br />Clip it.<br /><span className="text-brand">Make it yours.</span>
             </h1>
           </div>
@@ -123,7 +120,7 @@ function Home() {
             onAdd={add}
             quantity={cart.find((line) => line.sku === p.sku)?.qty ?? 0}
             onSetQuantity={setQty}
-            priority={index < 4}
+            priority={index === 0}
           />
         ))}
       </section>

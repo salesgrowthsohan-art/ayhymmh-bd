@@ -10,3 +10,4 @@
 - [x] Product video with sound on product detail page (controls + audio)
 - [x] Dynamic product sections/categories (face mask, miniature, admin can add/delete)
 - [x] Speed: eager first 4 images + lazy rest
+- [x] Home label removed; only first product is preloaded and failed media stops retrying
