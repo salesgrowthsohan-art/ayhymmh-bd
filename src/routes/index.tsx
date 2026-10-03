@@ -66,7 +66,7 @@ function Home() {
             </h1>
           </div>
           <div className="border-3 border-ink bg-ink p-4 text-primary-foreground shadow-[6px_6px_0_0_var(--brand)]">
-            <p className="text-sm font-bold leading-relaxed">Premium keychain আর flag collection। Dhaka-তে ১–২ দিনের delivery.</p>
+            <p className="text-sm font-bold leading-relaxed">welcome to ayhymmh 😔🙏🏼</p>
           </div>
         </div>
         <div className="mt-5 flex flex-wrap gap-3">
