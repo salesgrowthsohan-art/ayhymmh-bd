@@ -55,18 +55,43 @@ function Home() {
   return (
     <div className="mx-auto max-w-6xl overflow-hidden px-4">
       {/* Hero */}
-      <section className="hero-wave rise mt-4 overflow-hidden border-4 border-ink bg-brand-wash p-5 sm:mt-6 sm:p-8">
-        <div className="grid items-end gap-5 sm:grid-cols-[1.5fr_0.7fr]">
-          <div>
-            <h1 className="text-4xl font-bold uppercase leading-[0.92] sm:text-6xl">
-              Pick it.<br />Clip it.<br /><span className="text-brand">Make it yours.</span>
-            </h1>
-          </div>
-          <div className="border-3 border-ink bg-ink p-4 text-primary-foreground shadow-[6px_6px_0_0_var(--brand)]">
-            <p className="text-sm font-bold leading-relaxed">welcome to ayhymmh 😔🙏🏼</p>
+      <section className="hero-wave rise relative mt-4 overflow-hidden border-4 border-ink bg-brand-wash sm:mt-6">
+        {/* 2D marquee ticker */}
+        <div aria-hidden className="overflow-hidden border-b-4 border-ink bg-ink py-1.5">
+          <div className="marquee-track flex w-max">
+            <span className="whitespace-nowrap px-4 text-[10px] font-bold uppercase tracking-[0.2em] text-primary-foreground">
+              New stock arrived · Limited drop · bKash / COD · Dhaka-তে ১–২ দিনে delivery ·&nbsp;
+            </span>
+            <span className="whitespace-nowrap px-4 text-[10px] font-bold uppercase tracking-[0.2em] text-primary-foreground">
+              New stock arrived · Limited drop · bKash / COD · Dhaka-তে ১–২ দিনে delivery ·&nbsp;
+            </span>
           </div>
         </div>
-        <div className="mt-5 flex flex-wrap gap-3">
+
+        {/* Floating 2D stickers */}
+        <div aria-hidden className="floaty absolute right-3 top-14 z-10">
+          <div className="grid h-11 w-11 place-items-center rounded-full border-2 border-ink bg-pop text-lg shadow-[3px_3px_0_0_var(--ink)]">
+            ✨
+          </div>
+        </div>
+        <div aria-hidden className="floaty absolute bottom-3 right-3 z-10" style={{ animationDelay: "-2s" }}>
+          <div className="grid h-11 w-11 rotate-12 place-items-center rounded-xl border-2 border-ink bg-signal shadow-[3px_3px_0_0_var(--ink)]">
+            <span className="block h-3 w-3 rounded-full border-[3px] border-ink bg-card" />
+          </div>
+        </div>
+
+        <div className="p-5 sm:p-8">
+          <div className="grid items-end gap-5 sm:grid-cols-[1.5fr_0.7fr]">
+            <div>
+              <h1 className="text-4xl font-bold uppercase leading-[0.92] sm:text-6xl">
+                Pick it.<br />Clip it.<br /><span className="text-brand">Make it yours.</span>
+              </h1>
+            </div>
+            <div className="border-3 border-ink bg-ink p-4 text-primary-foreground shadow-[6px_6px_0_0_var(--brand)]">
+              <p className="text-sm font-bold leading-relaxed">welcome to ayhymmh 😔🙏🏼</p>
+            </div>
+          </div>
+          <div className="mt-5 flex flex-wrap gap-3">
           <a
             href="#collection"
             className="brutal press bg-brand px-4 py-2.5 text-sm font-bold"
@@ -83,6 +108,7 @@ function Home() {
           >
             Follow up on my order
           </a>
+          </div>
         </div>
       </section>
 
