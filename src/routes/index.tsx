@@ -108,6 +108,7 @@ function Home() {
           >
             Follow up on my order
           </a>
+          </div>
         </div>
       </section>
 
