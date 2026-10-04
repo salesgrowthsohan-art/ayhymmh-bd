@@ -10,12 +10,12 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Flag keychain আর cute keychain stuff। bKash বা Cash on Delivery, Dhaka-তে ১–২ দিনে delivery।",
+          "Flag keychains, cute charms, face masks and miniatures. bKash or Cash on Delivery, 1–2 day delivery in Dhaka.",
       },
       { property: "og:title", content: "ayhymmh — Premium Keychain & Flag Store" },
       {
         property: "og:description",
-        content: "Flag ও keychain stuff — WhatsApp এ অর্ডার করুন, Dhaka-তে ১–২ দিনে delivery।",
+        content: "Order keychains and flags on WhatsApp — 1–2 day delivery in Dhaka.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -24,9 +24,11 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
+const TAB_TINTS = ["bg-card", "bg-mint", "bg-lilac", "bg-pop", "bg-tangerine"];
+
 function tabsFor(categories: string[]): { key: Category | "all"; label: string }[] {
   return [
-    { key: "all", label: "সব" },
+    { key: "all", label: "All" },
     ...categories.map((c) => ({ key: c as Category, label: categoryLabel(c) })),
   ];
 }
@@ -60,10 +62,10 @@ function Home() {
         <div aria-hidden className="overflow-hidden border-b-4 border-ink bg-ink py-1.5">
           <div className="marquee-track flex w-max">
             <span className="whitespace-nowrap px-4 text-[10px] font-bold uppercase tracking-[0.2em] text-primary-foreground">
-              New stock arrived · Limited drop · bKash / COD · Dhaka-তে ১–২ দিনে delivery ·&nbsp;
+              New stock arrived · Limited drop · bKash / COD · 1–2 day delivery in Dhaka ·&nbsp;
             </span>
             <span className="whitespace-nowrap px-4 text-[10px] font-bold uppercase tracking-[0.2em] text-primary-foreground">
-              New stock arrived · Limited drop · bKash / COD · Dhaka-তে ১–২ দিনে delivery ·&nbsp;
+              New stock arrived · Limited drop · bKash / COD · 1–2 day delivery in Dhaka ·&nbsp;
             </span>
           </div>
         </div>
@@ -100,7 +102,7 @@ function Home() {
           </a>
           <a
             href={waLink(
-              "🔎 Follow up on my order\n\n👤 Name: \n📞 Phone: \n🧾 Order details: \n\n(উপরের তথ্যগুলো পূরণ করে পাঠান — আমরা status জানিয়ে দিচ্ছি।)",
+              "🔎 Follow up on my order\n\n👤 Name: \n📞 Phone: \n🧾 Order details: \n\n(Fill in the details above — we will send you the status.)",
             )}
             target="_blank"
             rel="noreferrer"
@@ -118,17 +120,17 @@ function Home() {
           value={q}
           onChange={(e) => setQ(e.target.value)}
           maxLength={60}
-          placeholder="Search keychain বা flag…"
+          placeholder="Search keychains, flags…"
           aria-label="Search products"
           className="brutal-sm w-full bg-card px-4 py-3 text-sm outline-none focus:shadow-[4px_4px_0_0_var(--brand)]"
         />
         <div className="no-scrollbar mt-3 flex gap-2 overflow-x-auto pb-1">
-          {TABS.map((t) => (
+          {TABS.map((t, i) => (
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
               className={`brutal-sm press min-h-11 shrink-0 px-4 py-2 text-sm font-bold uppercase ${
-                tab === t.key ? "bg-brand" : "bg-card"
+                tab === t.key ? "bg-brand" : TAB_TINTS[i % TAB_TINTS.length]
               }`}
             >
               {t.label}
@@ -151,7 +153,7 @@ function Home() {
         ))}
       </section>
       {!list.length && (
-        <p className="py-14 text-center text-sm text-muted-foreground">কিছু পাওয়া যায়নি 🥲</p>
+        <p className="py-14 text-center text-sm text-muted-foreground">Nothing found 🥲</p>
       )}
     </div>
   );
