@@ -83,7 +83,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "ayhymmh — Keychain & Flag Store Bangladesh" },
       {
         name: "description",
-        content: "Premium keychain ও flag collection. Dhaka-তে ১–২ দিনে delivery।",
+        content: "Keychain and flag collection. 1–2 day delivery in Dhaka.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

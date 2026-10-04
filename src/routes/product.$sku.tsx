@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useUi } from "@/components/Shell";
 import { ProductMedia } from "@/components/ProductMedia";
-import { categoryLabel, taka, useStore } from "@/lib/store";
+import { categoryLabel, isAvailable, stockStatus, taka, unitsLeft, useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/product/$sku")({
   head: ({ params }) => ({
@@ -9,12 +9,12 @@ export const Route = createFileRoute("/product/$sku")({
       { title: `${params.sku} — ayhymmh Keychain & Flag` },
       {
         name: "description",
-        content: `Keychain ${params.sku} — দাম, stock status আর delivery তথ্য। WhatsApp এ সরাসরি অর্ডার করুন।`,
+        content: `Keychain ${params.sku} — price, availability and delivery info. Order directly on WhatsApp.`,
       },
       { property: "og:title", content: `${params.sku} — ayhymmh` },
       {
         property: "og:description",
-        content: "Cute keychain, Dhaka-তে ১–২ দিনে delivery, bKash বা Cash on Delivery।",
+        content: "Cute keychain, 1–2 day delivery in Dhaka, bKash or Cash on Delivery.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -33,14 +33,17 @@ function ProductDetail() {
     return (
       <div className="mx-auto max-w-md px-4 py-20 text-center">
         <p className="font-display text-xl font-bold">
-          {hydrated ? "প্রোডাক্টটি পাওয়া যায়নি" : "লোড হচ্ছে…"}
+          {hydrated ? "Product not found" : "Loading…"}
         </p>
         <Link to="/" className="brutal-sm press mt-5 inline-block rounded-2xl bg-brand px-4 py-2 font-bold">
-          সব keychain দেখুন
+          See all products
         </Link>
       </div>
     );
   }
+
+  const status = stockStatus(product);
+  const available = isAvailable(product);
 
   const orderNow = () => {
     const delivery = settings.deliveryCharge;
@@ -51,7 +54,7 @@ function ProductDetail() {
       "",
       `Subtotal: ${taka(product.price)}`,
       `Delivery: ${delivery > 0 ? taka(delivery) : "Free"}`,
-      `Total (delivery সহ): ${taka(product.price + delivery)}`,
+      `Total (incl. delivery): ${taka(product.price + delivery)}`,
       "",
       "👤 Name: ",
       "📞 Phone: ",
@@ -65,7 +68,7 @@ function ProductDetail() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-5">
       <Link to="/" className="text-sm font-semibold underline">
-        ← সব keychain
+        ← All products
       </Link>
 
       <div className="mt-4 grid gap-6 md:grid-cols-2">
@@ -75,7 +78,7 @@ function ProductDetail() {
               <ProductMedia
                 key={i}
                 src={src}
-                alt={`${product.title} — ছবি ${i + 1}`}
+                alt={`${product.title} — photo ${i + 1}`}
                 className="aspect-square w-full shrink-0 snap-center object-cover"
                 controls
               />
@@ -92,21 +95,21 @@ function ProductDetail() {
           </span>
           <h1 className="mt-3 text-2xl font-bold sm:text-3xl">{product.title}</h1>
           <p className="mt-3 font-display text-3xl font-bold">{taka(product.price)}</p>
-          <p className={`mt-1 text-sm font-bold ${product.inStock ? "text-success" : "text-destructive"}`}>
-            {product.inStock ? "✅ In stock" : "❌ Stock out"}
+          <p className={`mt-1 text-sm font-bold ${status === "out" ? "text-destructive" : "text-success"}`}>
+            {status === "out" ? "Stock out" : status === "low" ? `Hurry — only ${unitsLeft(product)} left` : "In stock"}
           </p>
 
           <p className="mt-4 text-sm leading-relaxed">{product.description}</p>
 
           <div className="mt-4 flex flex-wrap gap-2 text-xs font-bold">
-            <span className="brutal-sm rounded-full bg-white px-3 py-1">bKash / Cash on Delivery</span>
-            <span className="brutal-sm rounded-full bg-white px-3 py-1">Dhaka-তে ১–২ দিন</span>
+            <span className="brutal-sm rounded-full bg-lilac px-3 py-1">bKash / Cash on Delivery</span>
+            <span className="brutal-sm rounded-full bg-white px-3 py-1">Dhaka 1–2 days</span>
           </div>
 
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
             <button
               onClick={orderNow}
-              disabled={!product.inStock}
+              disabled={!available}
               className="brutal press flex-1 rounded-2xl bg-brand px-4 py-3 font-display font-bold disabled:bg-muted disabled:text-muted-foreground"
             >
               Order Now (WhatsApp)
@@ -116,7 +119,7 @@ function ProductDetail() {
                 addToCart(product.sku);
                 openCart();
               }}
-              disabled={!product.inStock}
+              disabled={!available}
               className="brutal-sm press flex-1 rounded-2xl bg-white px-4 py-3 font-bold disabled:text-muted-foreground"
             >
               Add to Cart

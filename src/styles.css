@@ -27,6 +27,9 @@
   --color-ink: var(--ink);
   --color-signal: var(--signal);
   --color-pop: var(--pop);
+  --color-mint: var(--mint);
+  --color-lilac: var(--lilac);
+  --color-tangerine: var(--tangerine);
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
   --radius-sm: calc(var(--radius) - 4px);
@@ -79,6 +82,9 @@
   --ink: oklch(0.16 0.015 285);
   --signal: oklch(0.67 0.21 255);
   --pop: oklch(0.87 0.16 95);
+  --mint: oklch(0.86 0.12 165);
+  --lilac: oklch(0.8 0.1 300);
+  --tangerine: oklch(0.78 0.16 55);
   --success: oklch(0.7 0.18 150);
   --success-foreground: oklch(0.14 0.02 150);
   --background: oklch(0.965 0.006 285);

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ProductMedia } from "@/components/ProductMedia";
-import { taka, useStore } from "@/lib/store";
+import { taka, unitsLeft, useStore } from "@/lib/store";
 
 type Form = { name: string; phone: string; address: string };
 
@@ -16,10 +16,10 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
 
   const validate = () => {
     const e: Partial<Form> = {};
-    if (!form.name.trim()) e.name = "নাম লিখুন";
+    if (!form.name.trim()) e.name = "Enter your name";
     if (!/^0\d{9,10}$/.test(form.phone.trim().replace(/\s|-/g, "")))
-      e.phone = "সঠিক মোবাইল নম্বর দিন (যেমন 01712345678)";
-    if (form.address.trim().length < 8) e.address = "সম্পূর্ণ ঠিকানা লিখুন";
+      e.phone = "Enter a valid mobile number (e.g. 01712345678)";
+    if (form.address.trim().length < 8) e.address = "Enter your full address";
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -36,7 +36,7 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
       "",
       `Subtotal: ${taka(subtotal)}`,
       `Delivery: ${settings.deliveryCharge > 0 ? taka(settings.deliveryCharge) : "Free"}`,
-      `Total (delivery সহ): ${taka(total)}`,
+      `Total (incl. delivery): ${taka(total)}`,
       "",
       `👤 Name: ${form.name.trim()}`,
       `📞 Phone: ${form.phone.trim()}`,
@@ -55,7 +55,7 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
       <div className="absolute inset-0 bg-ink/40" onClick={onClose} aria-hidden />
       <div className="sheet-in relative flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-3xl border-2 border-ink bg-background sm:max-w-lg sm:rounded-3xl">
         <div className="flex items-center justify-between border-b-2 border-ink bg-brand-soft px-4 py-3">
-          <h2 className="font-display text-lg font-bold">আপনার কার্ট</h2>
+          <h2 className="font-display text-lg font-bold">Your Cart</h2>
           <button onClick={onClose} className="brutal-sm press rounded-full bg-white px-3 py-1 text-sm font-bold">
             ✕
           </button>
@@ -64,7 +64,7 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
         <div className="no-scrollbar flex-1 overflow-y-auto px-4 py-4">
           {!lines.length ? (
             <p className="py-10 text-center text-sm text-muted-foreground">
-              কার্ট খালি — একটি Keychain বা Flag যোগ করুন
+              Your cart is empty — add something cute
             </p>
           ) : (
             <ul className="space-y-3">
@@ -80,7 +80,7 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
                     <p className="text-xs text-muted-foreground">{taka(l.product.price)}</p>
                     <div className="mt-2 flex items-center gap-2">
                       <button
-                        aria-label="কমান"
+                        aria-label="Decrease"
                         onClick={() => setQty(l.sku, l.qty - 1)}
                         className="brutal-sm press h-7 w-7 rounded-lg bg-brand-wash font-bold"
                       >
@@ -88,9 +88,10 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
                       </button>
                       <span className="w-6 text-center text-sm font-bold">{l.qty}</span>
                       <button
-                        aria-label="বাড়ান"
+                        aria-label="Increase"
+                        disabled={l.qty >= unitsLeft(l.product)}
                         onClick={() => setQty(l.sku, l.qty + 1)}
-                        className="brutal-sm press h-7 w-7 rounded-lg bg-brand-soft font-bold"
+                        className="brutal-sm press h-7 w-7 rounded-lg bg-brand-soft font-bold disabled:opacity-35"
                       >
                         +
                       </button>
@@ -121,14 +122,14 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
                   </dd>
                 </div>
                 <div className="flex justify-between text-base font-bold">
-                  <dt>Total (delivery সহ)</dt>
+                  <dt>Total (incl. delivery)</dt>
                   <dd>{taka(total)}</dd>
                 </div>
               </dl>
 
               <div className="mt-5 space-y-3">
                 <label className="block text-sm font-semibold">
-                  নাম *
+                  Name *
                   <input
                     className={field}
                     value={form.name}
@@ -138,7 +139,7 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
                   {errors.name && <span className="text-xs text-destructive">{errors.name}</span>}
                 </label>
                 <label className="block text-sm font-semibold">
-                  মোবাইল নম্বর *
+                  Mobile number *
                   <input
                     className={field}
                     inputMode="tel"
@@ -150,7 +151,7 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
                   {errors.phone && <span className="text-xs text-destructive">{errors.phone}</span>}
                 </label>
                 <label className="block text-sm font-semibold">
-                  ডেলিভারি ঠিকানা *
+                  Delivery address *
                   <textarea
                     className={field}
                     rows={3}
@@ -176,7 +177,7 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
               Confirm Order via WhatsApp
             </button>
             <p className="mt-2 text-center text-xs text-muted-foreground">
-              bKash বা Cash on Delivery · Dhaka-তে ১–২ দিনে delivery
+              bKash or Cash on Delivery · 1–2 day delivery in Dhaka
             </p>
           </div>
         )}
