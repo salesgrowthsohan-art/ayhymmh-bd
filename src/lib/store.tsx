@@ -19,6 +19,8 @@ export type Product = {
   category: Category;
   description: string;
   inStock: boolean;
+  /** Units in stock (admin-only, never shown as a raw number unless low). */
+  stock?: number;
 };
 
 export type Settings = {
@@ -50,14 +52,15 @@ const U = (id: string) =>
 export const SEED_PRODUCTS: Product[] = [
   {
     id: "p1",
-    title: "বাংলাদেশ Flag Keychain",
+    title: "Bangladesh Flag Keychain",
     sku: "KC-01",
     price: 120,
     images: [U("1588412079929-790b9f593d8e"), U("1606107557195-0e29a4b5b4aa")],
     category: "flag",
     description:
-      "মেটাল বেস, এনামেল ফিনিশ। লাল-সবুজ পতাকার ছোট্ট গর্ব, ব্যাগ বা চাবির গোছায়।",
+      "Metal base, enamel finish. A tiny red-green pride for your bag or keys.",
     inStock: true,
+    stock: 12,
   },
   {
     id: "p2",
@@ -66,8 +69,9 @@ export const SEED_PRODUCTS: Product[] = [
     price: 130,
     images: [U("1522778119026-d647f0596c20"), U("1526232761682-d26e03ac148e")],
     category: "flag",
-    description: "নীল-সাদা এনামেল ফ্ল্যাগ চার্ম, স্টেইনলেস রিং সহ।",
+    description: "Blue-white enamel flag charm with a stainless ring.",
     inStock: true,
+    stock: 5,
   },
   {
     id: "p3",
@@ -76,8 +80,9 @@ export const SEED_PRODUCTS: Product[] = [
     price: 130,
     images: [U("1526232761682-d26e03ac148e")],
     category: "flag",
-    description: "ম্যাচ ডে ভাইব। হালকা, টেকসই, রঙ ফিকে হয় না।",
+    description: "Match day vibes. Light, durable, colours never fade.",
     inStock: false,
+    stock: 0,
   },
   {
     id: "p4",
@@ -86,8 +91,9 @@ export const SEED_PRODUCTS: Product[] = [
     price: 100,
     images: [U("1530325553146-1b0bfa00a1b4"), U("1591561954557-26941169b49e")],
     category: "keychain",
-    description: "সফট প্লাশ টেডি চার্ম, ব্যাগের জন্য পারফেক্ট।",
+    description: "Soft plush teddy charm, perfect for bags.",
     inStock: true,
+    stock: 20,
   },
   {
     id: "p5",
@@ -96,8 +102,9 @@ export const SEED_PRODUCTS: Product[] = [
     price: 150,
     images: [U("1511556532299-8f662fc26c06")],
     category: "keychain",
-    description: "আসল লেদার লুপ, ব্রাশড মেটাল রিং। ক্লিন আর টেকসই।",
+    description: "Genuine leather loop, brushed metal ring. Clean and durable.",
     inStock: true,
+    stock: 3,
   },
   {
     id: "p6",
@@ -106,8 +113,9 @@ export const SEED_PRODUCTS: Product[] = [
     price: 110,
     images: [U("1549298916-b41d501d3772"), U("1530325553146-1b0bfa00a1b4")],
     category: "keychain",
-    description: "গ্লসি এক্রিলিক হার্ট, পিঙ্ক শেড। গিফটের জন্য দারুণ।",
+    description: "Glossy acrylic heart in pink. A great gift.",
     inStock: true,
+    stock: 15,
   },
 ];
 
@@ -262,3 +270,18 @@ export const taka = (n: number) => `৳${n.toLocaleString("en-US")}`;
 
 export const categoryLabel = (c: string) =>
   c.charAt(0).toUpperCase() + c.slice(1);
+
+
+export const LOW_STOCK = 6;
+
+/** Units available; undefined stock falls back to the inStock flag. */
+export const unitsLeft = (p: Product) =>
+  !p.inStock ? 0 : typeof p.stock === "number" ? Math.max(0, p.stock) : Infinity;
+
+export const isAvailable = (p: Product) => unitsLeft(p) > 0;
+
+export type StockStatus = "out" | "low" | "ok";
+export const stockStatus = (p: Product): StockStatus => {
+  const n = unitsLeft(p);
+  return n <= 0 ? "out" : n <= LOW_STOCK ? "low" : "ok";
+};
