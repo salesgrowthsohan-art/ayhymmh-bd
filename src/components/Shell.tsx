@@ -2,7 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { useStore } from "@/lib/store";
 import { CartSheet } from "./CartSheet";
-import { MessageCircle, ShoppingBag } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
+import { BdFlag, WhatsAppIcon } from "./BdFlag";
 
 const UiContext = createContext<{ openCart: () => void }>({ openCart: () => {} });
 export const useUi = () => useContext(UiContext);
@@ -15,9 +16,7 @@ function Header({ onCart }: { onCart: () => void }) {
         <Link to="/" className="font-display text-xl font-bold tracking-tight sm:text-2xl">
           ayhymmh
         </Link>
-        <span className="hidden rounded-full bg-brand-soft px-2 py-0.5 text-[11px] font-semibold sm:inline">
-          KEYCHAIN + FLAG · BD
-        </span>
+        <BdFlag className="h-4 w-auto border border-ink" />
         <button
           onClick={onCart}
           aria-label={`Cart, ${cartCount} items`}
@@ -25,7 +24,7 @@ function Header({ onCart }: { onCart: () => void }) {
         >
           <ShoppingBag className="inline-block" size={17} aria-hidden /> Cart
           {cartCount > 0 && (
-            <span className="absolute -right-2 -top-2 grid h-6 min-w-6 place-items-center rounded-full border-2 border-ink bg-white px-1 text-xs font-bold">
+            <span className="absolute -right-2 -top-2 grid h-6 min-w-6 place-items-center rounded-full border-2 border-ink bg-pop px-1 text-xs font-bold">
               {cartCount}
             </span>
           )}
@@ -39,9 +38,9 @@ function Footer() {
   return (
     <footer className="mt-16 border-t-2 border-ink bg-brand-wash">
       <div className="mx-auto max-w-6xl px-4 py-8 text-sm">
-        <p className="font-display text-lg font-bold">ayhymmh</p>
+        <p className="flex items-center gap-2 font-display text-lg font-bold">ayhymmh <BdFlag className="h-3.5 w-auto border border-ink" /></p>
         <p className="mt-1 text-muted-foreground">
-          Dhaka-তে ১–২ দিনের delivery · Payment: bKash বা Cash on Delivery
+          1–2 day delivery in Dhaka · Payment: bKash or Cash on Delivery
         </p>
         <p className="mt-1 text-muted-foreground">Instagram · soon</p>
         <div className="mt-5 flex items-center gap-3">
@@ -62,13 +61,13 @@ function WhatsAppFab() {
   const { waLink } = useStore();
   return (
     <a
-      href={waLink("হ্যালো! ayhymmh — আমি একটি product সম্পর্কে জানতে চাই।")}
+      href={waLink("Hi ayhymmh! I want to know about a product.")}
       target="_blank"
       rel="noreferrer"
-      aria-label="WhatsApp এ যোগাযোগ করুন"
+      aria-label="Chat on WhatsApp"
       className="brutal press fixed bottom-5 right-4 z-40 grid h-14 w-14 place-items-center rounded-full bg-success text-success-foreground"
     >
-      <MessageCircle size={26} strokeWidth={2.5} aria-hidden />
+      <WhatsAppIcon size={28} />
     </a>
   );
 }
