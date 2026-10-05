@@ -277,6 +277,19 @@ function ProductManager() {
               onChange={(e) => setDraft({ ...draft, description: e.target.value })}
             />
           </label>
+          <label className="block text-sm font-semibold">
+            Stock quantity (admin only — customers see "Only N left" at {LOW_STOCK} or less)
+            <input
+              type="number"
+              min={0}
+              className={field}
+              value={draft.stock ?? ""}
+              placeholder="e.g. 20"
+              onChange={(e) =>
+                setDraft({ ...draft, stock: e.target.value === "" ? undefined : Math.max(0, Math.floor(Number(e.target.value))) })
+              }
+            />
+          </label>
           <label className="flex items-center gap-2 text-sm font-semibold">
             <input
               type="checkbox"
@@ -298,6 +311,8 @@ function ProductManager() {
         </form>
       )}
 
+      <StockAlert />
+
       <ul className="mt-4 space-y-2">
         {products.map((p, index) => (
           <li key={p.id} className="brutal-sm flex items-center gap-3 rounded-2xl bg-brand-wash p-2">
@@ -305,8 +320,15 @@ function ProductManager() {
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-bold">{p.title}</p>
               <p className="text-xs text-muted-foreground">
-                {taka(p.price)} · {p.category}
+                {taka(p.price)} · {p.category} ·{" "}
+                <span data-stock-status={stockStatus(p)} className={stockStatus(p) === "ok" ? "" : "font-bold text-destructive"}>
+                  Stock: {typeof p.stock === "number" ? p.stock : "not set"}
+                </span>
               </p>
+              <div className="mt-1 flex items-center gap-1">
+                <button type="button" aria-label={`Stock −1 ${p.title}`} onClick={() => saveProduct({ ...p, stock: Math.max(0, (p.stock ?? 0) - 1) })} className="grid h-7 w-7 place-items-center border-2 border-ink bg-card text-xs font-bold">−</button>
+                <button type="button" aria-label={`Stock +1 ${p.title}`} onClick={() => saveProduct({ ...p, stock: (p.stock ?? 0) + 1 })} className="grid h-7 w-7 place-items-center border-2 border-ink bg-mint text-xs font-bold">+</button>
+              </div>
               <button
                 type="button"
                 onClick={() => saveProduct({ ...p, inStock: !p.inStock })}
@@ -338,6 +360,29 @@ function ProductManager() {
         ))}
       </ul>
     </section>
+  );
+}
+
+function StockAlert() {
+  const { products } = useStore();
+  const out = products.filter((p) => stockStatus(p) === "out");
+  const low = products.filter((p) => stockStatus(p) === "low");
+  return (
+    <div id="stock-alert" aria-label="Stock alert" className="mt-4 border-2 border-ink bg-pop/40 p-3 text-sm">
+      <p className="font-bold">Stock alert</p>
+      {!out.length && !low.length ? (
+        <p className="text-xs">All products have enough stock.</p>
+      ) : (
+        <ul className="mt-1 space-y-0.5 text-xs">
+          {out.map((p) => (
+            <li key={p.id} data-stock-status="out"><b>SOLD OUT:</b> {p.title}</li>
+          ))}
+          {low.map((p) => (
+            <li key={p.id} data-stock-status="low"><b>LOW ({unitsLeft(p)} left):</b> {p.title}</li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
 
