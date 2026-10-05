@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useUi } from "@/components/Shell";
 import { ProductMedia } from "@/components/ProductMedia";
-import { categoryLabel, isAvailable, stockStatus, taka, unitsLeft, useStore } from "@/lib/store";
+import { canOrder, categoryLabel, isPreOrder, lineTitle, stockStatus, taka, unitsLeft, useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/product/$sku")({
   head: ({ params }) => ({
@@ -43,14 +43,15 @@ function ProductDetail() {
   }
 
   const status = stockStatus(product);
-  const available = isAvailable(product);
+  const available = canOrder(product);
+  const pre = isPreOrder(product);
 
   const orderNow = () => {
     const delivery = settings.deliveryCharge;
     const msg = [
       "🛍️ New Order from Website",
       "",
-      `1. ${product.title} × 1 — ${taka(product.price)}`,
+      `1. ${lineTitle(product)} × 1 — ${taka(product.price)}`,
       "",
       `Subtotal: ${taka(product.price)}`,
       `Delivery: ${delivery > 0 ? taka(delivery) : "Free"}`,
@@ -96,7 +97,7 @@ function ProductDetail() {
           <h1 className="mt-3 text-2xl font-bold sm:text-3xl">{product.title}</h1>
           <p className="mt-3 font-display text-3xl font-bold">{taka(product.price)}</p>
           <p className={`mt-1 text-sm font-bold ${status === "out" ? "text-destructive" : "text-success"}`}>
-            {status === "out" ? "Stock out" : status === "low" ? `Hurry — only ${unitsLeft(product)} left` : "In stock"}
+            {pre ? "Pre-order open — ships when restocked" : status === "out" ? "Stock out" : status === "low" ? `Hurry — only ${unitsLeft(product)} left` : "In stock"}
           </p>
 
           <p className="mt-4 text-sm leading-relaxed">{product.description}</p>
@@ -112,7 +113,7 @@ function ProductDetail() {
               disabled={!available}
               className="brutal press flex-1 rounded-2xl bg-brand px-4 py-3 font-display font-bold disabled:bg-muted disabled:text-muted-foreground"
             >
-              Order Now (WhatsApp)
+              {pre ? "Pre-order (WhatsApp)" : "Order Now (WhatsApp)"}
             </button>
             <button
               onClick={() => {
