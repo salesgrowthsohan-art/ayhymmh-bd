@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ProductMedia } from "@/components/ProductMedia";
-import { taka, unitsLeft, useStore } from "@/lib/store";
+import { lineTitle, maxQty, taka, useStore } from "@/lib/store";
 
 type Form = { name: string; phone: string; address: string };
 
@@ -31,7 +31,7 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
       "",
       ...lines.map(
         (l, i) =>
-          `${i + 1}. ${l.product.title} × ${l.qty} — ${taka(l.product.price * l.qty)}`,
+          `${i + 1}. ${lineTitle(l.product)} × ${l.qty} — ${taka(l.product.price * l.qty)}`,
       ),
       "",
       `Subtotal: ${taka(subtotal)}`,
@@ -76,7 +76,7 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
                     className="h-16 w-16 rounded-xl border-2 border-ink object-cover"
                   />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-bold">{l.product.title}</p>
+                    <p className="truncate text-sm font-bold">{lineTitle(l.product)}</p>
                     <p className="text-xs text-muted-foreground">{taka(l.product.price)}</p>
                     <div className="mt-2 flex items-center gap-2">
                       <button
@@ -89,7 +89,7 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
                       <span className="w-6 text-center text-sm font-bold">{l.qty}</span>
                       <button
                         aria-label="Increase"
-                        disabled={l.qty >= unitsLeft(l.product)}
+                        disabled={l.qty >= maxQty(l.product)}
                         onClick={() => setQty(l.sku, l.qty + 1)}
                         className="brutal-sm press h-7 w-7 rounded-lg bg-brand-soft font-bold disabled:opacity-35"
                       >

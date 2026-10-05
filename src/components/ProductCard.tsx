@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, Minus, Plus, Sparkles } from "lucide-react";
 import { ProductMedia } from "@/components/ProductMedia";
-import { categoryLabel, isAvailable, stockStatus, taka, unitsLeft, type Product } from "@/lib/store";
+import { canOrder, categoryLabel, isPreOrder, maxQty, stockStatus, taka, unitsLeft, type Product } from "@/lib/store";
 
 export function ProductCard({
   product,
@@ -17,7 +17,8 @@ export function ProductCard({
   priority?: boolean;
 }) {
   const status = stockStatus(product);
-  const available = isAvailable(product);
+  const available = canOrder(product);
+  const pre = isPreOrder(product);
   return (
     <article data-stock-status={status} className="product-card rise flex min-w-0 flex-col overflow-hidden bg-card">
       <Link
@@ -32,6 +33,11 @@ export function ProductCard({
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.035]"
         />
         {status === "out" && (
+          <span className={`absolute left-2 top-2 border-2 border-ink px-2 py-1 text-[10px] font-bold uppercase ${pre ? "bg-brand-soft" : "bg-card"}`}>
+            {pre ? "Pre-order" : "Stock out"}
+          </span>
+        )}
+        {false && (
           <span className="absolute left-2 top-2 border-2 border-ink bg-card px-2 py-1 text-[10px] font-bold uppercase">
             Stock out
           </span>
@@ -72,7 +78,7 @@ export function ProductCard({
           <button
             type="button"
             aria-label={`Increase ${product.title}`}
-            disabled={!available || quantity >= unitsLeft(product)}
+            disabled={!available || quantity >= maxQty(product)}
             onClick={() => onSetQuantity(product.sku, quantity + 1)}
             className="grid h-11 place-items-center border-l-2 border-ink transition-colors hover:bg-ink hover:text-primary-foreground disabled:cursor-not-allowed disabled:opacity-35"
           >
@@ -80,11 +86,11 @@ export function ProductCard({
           </button>
         </div>
         <button
-          disabled={!available || quantity >= unitsLeft(product)}
+          disabled={!available || quantity >= maxQty(product)}
           onClick={() => onAdd(product.sku)}
           className="cart-cta press mt-3 flex min-h-12 items-center justify-between gap-2 border-2 border-ink bg-brand px-3 text-sm font-bold uppercase disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
         >
-          <span className="flex items-center gap-2"><Sparkles size={17} aria-hidden />{available ? "Add to Cart" : "Stock out"}</span>
+          <span className="flex items-center gap-2"><Sparkles size={17} aria-hidden />{pre ? "Pre-order" : available ? "Add to Cart" : "Stock out"}</span>
           {available && <ArrowUpRight size={21} strokeWidth={3} aria-hidden />}
         </button>
       </div>

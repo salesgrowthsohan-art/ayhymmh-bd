@@ -21,6 +21,8 @@ export type Product = {
   inStock: boolean;
   /** Units in stock (admin-only, never shown as a raw number unless low). */
   stock?: number | undefined;
+  /** Allow ordering while out of stock. */
+  preOrder?: boolean | undefined;
 };
 
 export type Settings = {
@@ -279,6 +281,13 @@ export const unitsLeft = (p: Product) =>
   !p.inStock ? 0 : typeof p.stock === "number" ? Math.max(0, p.stock) : Infinity;
 
 export const isAvailable = (p: Product) => unitsLeft(p) > 0;
+
+/** True when the product is out of stock but accepts pre-orders. */
+export const isPreOrder = (p: Product) => !isAvailable(p) && !!p.preOrder;
+export const canOrder = (p: Product) => isAvailable(p) || !!p.preOrder;
+/** Max units a customer may add (pre-orders are capped at 20). */
+export const maxQty = (p: Product) => (isAvailable(p) ? unitsLeft(p) : p.preOrder ? 20 : 0);
+export const lineTitle = (p: Product) => (isPreOrder(p) ? `${p.title} (Pre-order)` : p.title);
 
 export type StockStatus = "out" | "low" | "ok";
 export const stockStatus = (p: Product): StockStatus => {

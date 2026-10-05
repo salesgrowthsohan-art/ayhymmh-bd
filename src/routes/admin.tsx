@@ -293,6 +293,14 @@ function ProductManager() {
           <label className="flex items-center gap-2 text-sm font-semibold">
             <input
               type="checkbox"
+              checked={!!draft.preOrder}
+              onChange={(e) => setDraft({ ...draft, preOrder: e.target.checked })}
+            />
+            Allow pre-order when stock out
+          </label>
+          <label className="flex items-center gap-2 text-sm font-semibold">
+            <input
+              type="checkbox"
               checked={draft.inStock}
               onChange={(e) => setDraft({ ...draft, inStock: e.target.checked })}
             />
@@ -327,6 +335,7 @@ function ProductManager() {
               </p>
               <div className="mt-1 flex items-center gap-1">
                 <button type="button" aria-label={`Stock −1 ${p.title}`} onClick={() => saveProduct({ ...p, stock: Math.max(0, (p.stock ?? 0) - 1) })} className="grid h-7 w-7 place-items-center border-2 border-ink bg-card text-xs font-bold">−</button>
+                <button type="button" aria-pressed={!!p.preOrder} onClick={() => saveProduct({ ...p, preOrder: !p.preOrder })} className={`h-7 border-2 border-ink px-2 text-[11px] font-bold uppercase ${p.preOrder ? "bg-brand" : "bg-card"}`}>{p.preOrder ? "Pre-order: on" : "Pre-order: off"}</button>
                 <button type="button" aria-label={`Stock +1 ${p.title}`} onClick={() => saveProduct({ ...p, stock: (p.stock ?? 0) + 1 })} className="grid h-7 w-7 place-items-center border-2 border-ink bg-mint text-xs font-bold">+</button>
               </div>
               <button
