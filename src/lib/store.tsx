@@ -20,7 +20,7 @@ export type Product = {
   description: string;
   inStock: boolean;
   /** Units in stock (admin-only, never shown as a raw number unless low). */
-  stock?: number;
+  stock?: number | undefined;
 };
 
 export type Settings = {
