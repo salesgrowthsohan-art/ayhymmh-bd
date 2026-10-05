@@ -37,11 +37,6 @@ export function ProductCard({
             {pre ? "Pre-order" : "Stock out"}
           </span>
         )}
-        {false && (
-          <span className="absolute left-2 top-2 border-2 border-ink bg-card px-2 py-1 text-[10px] font-bold uppercase">
-            Stock out
-          </span>
-        )}
         {status === "low" && (
           <span className="absolute left-2 top-2 border-2 border-ink bg-tangerine px-2 py-1 text-[10px] font-bold uppercase">
             Only {unitsLeft(product)} left
