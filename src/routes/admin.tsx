@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronDown, ChevronUp, Home, ImagePlus, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ProductMedia } from "@/components/ProductMedia";
-import { categoryLabel, taka, useStore, type Category, type Product } from "@/lib/store";
+import { categoryLabel, LOW_STOCK, stockStatus, taka, unitsLeft, useStore, type Category, type Product } from "@/lib/store";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
