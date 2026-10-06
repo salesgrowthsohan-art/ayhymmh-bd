@@ -116,7 +116,33 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
 
           {lines.length > 0 && (
             <>
-              <dl className="mt-5 space-y-1 border-t-2 border-dashed border-ink/30 pt-4 text-sm">
+              <fieldset className="mt-5 border-t-2 border-dashed border-ink/30 pt-4">
+                <legend className="text-sm font-bold">Delivery area *</legend>
+                <div className="mt-2 grid grid-cols-2 gap-2">
+                  {(
+                    [
+                      { id: "dhaka", label: "Inside Dhaka", fee: settings.deliveryCharge },
+                      { id: "outside", label: "Outside Dhaka", fee: settings.outsideDeliveryCharge },
+                    ] as const
+                  ).map((o) => (
+                    <button
+                      key={o.id}
+                      type="button"
+                      aria-pressed={area === o.id}
+                      onClick={() => setArea(o.id)}
+                      className={`brutal-sm press rounded-xl px-3 py-2 text-sm font-bold ${
+                        area === o.id ? "bg-brand" : "bg-white"
+                      }`}
+                    >
+                      {o.label}
+                      <span className="block text-xs font-semibold">
+                        {o.fee > 0 ? taka(o.fee) : "Free"}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
+              <dl className="mt-4 space-y-1 border-t-2 border-dashed border-ink/30 pt-4 text-sm">
                 <div className="flex justify-between">
                   <dt>Subtotal</dt>
                   <dd className="font-semibold">{taka(subtotal)}</dd>
