@@ -40,12 +40,13 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
       ),
       "",
       `Subtotal: ${taka(subtotal)}`,
-      `Delivery: ${settings.deliveryCharge > 0 ? taka(settings.deliveryCharge) : "Free"}`,
+      `Delivery (${area === "dhaka" ? "Inside Dhaka" : "Outside Dhaka"}): ${delivery > 0 ? taka(delivery) : "Free"}`,
       `Total (incl. delivery): ${taka(total)}`,
       "",
       `👤 Name: ${form.name.trim()}`,
       `📞 Phone: ${form.phone.trim()}`,
-      `📍 Address: ${form.address.trim()}`,
+      `📍 Area: ${area === "dhaka" ? "Inside Dhaka" : "Outside Dhaka"}`,
+      `🏠 Address: ${form.address.trim()}`,
       "",
       "Payment: bKash / Cash on Delivery",
     ].join("\n");
@@ -123,7 +124,7 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
                 <div className="flex justify-between">
                   <dt>Delivery Charge</dt>
                   <dd className="font-semibold">
-                    {settings.deliveryCharge > 0 ? taka(settings.deliveryCharge) : "Free"}
+                    {delivery > 0 ? taka(delivery) : "Free"}
                   </dd>
                 </div>
                 <div className="flex justify-between text-base font-bold">
