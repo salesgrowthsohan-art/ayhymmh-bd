@@ -5,9 +5,14 @@ import { lineTitle, maxQty, taka, useStore } from "@/lib/store";
 type Form = { name: string; phone: string; address: string };
 
 export function CartSheet({ onClose }: { onClose: () => void }) {
-  const { cart, products, settings, subtotal, total, setQty, removeFromCart, waLink } = useStore();
+  const { cart, products, settings, subtotal, setQty, removeFromCart, waLink } = useStore();
   const [form, setForm] = useState<Form>({ name: "", phone: "", address: "" });
+  const [area, setArea] = useState<"dhaka" | "outside">("dhaka");
   const [errors, setErrors] = useState<Partial<Form>>({});
+
+  const delivery =
+    area === "dhaka" ? settings.deliveryCharge : settings.outsideDeliveryCharge;
+  const total = subtotal + (cart.length ? delivery : 0);
 
   const lines = cart.flatMap((l) => {
     const p = products.find((x) => x.sku === l.sku);
