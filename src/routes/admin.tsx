@@ -399,7 +399,10 @@ function StoreSettings() {
   const { settings, products, saveSettings } = useStore();
   const [wa, setWa] = useState(settings.whatsapp);
   const [fee, setFee] = useState(String(settings.deliveryCharge));
-  const [freeDelivery, setFreeDelivery] = useState(settings.deliveryCharge === 0);
+  const [outsideFee, setOutsideFee] = useState(String(settings.outsideDeliveryCharge));
+  const [freeDelivery, setFreeDelivery] = useState(
+    settings.deliveryCharge === 0 && settings.outsideDeliveryCharge === 0,
+  );
   const [newCat, setNewCat] = useState("");
   const [pw1, setPw1] = useState("");
   const [pw2, setPw2] = useState("");
@@ -423,7 +426,7 @@ function StoreSettings() {
           <input className={field} value={wa} maxLength={15} onChange={(e) => setWa(e.target.value)} />
         </label>
         <label className="block text-sm font-semibold">
-          Flat delivery charge (৳)
+          Delivery charge — ঢাকার ভিতরে (৳)
           <input
             type="number"
             min={0}
@@ -433,6 +436,17 @@ function StoreSettings() {
             onChange={(e) => setFee(e.target.value)}
           />
         </label>
+        <label className="block text-sm font-semibold">
+          Delivery charge — ঢাকার বাইরে (৳)
+          <input
+            type="number"
+            min={0}
+            className={field}
+            value={outsideFee}
+            disabled={freeDelivery}
+            onChange={(e) => setOutsideFee(e.target.value)}
+          />
+        </label>
       </div>
       <label className="mt-3 flex items-center gap-2 text-sm font-semibold">
         <input
@@ -440,13 +454,14 @@ function StoreSettings() {
           checked={freeDelivery}
           onChange={(e) => setFreeDelivery(e.target.checked)}
         />
-        Free home delivery চালু করুন (delivery charge ৳0 হবে)
+        Free home delivery চালু করুন (ঢাকা + ঢাকার বাইরে দুটোই ৳0 হবে)
       </label>
       <button
         onClick={() => {
           saveSettings({
             whatsapp: wa.trim() || settings.whatsapp,
             deliveryCharge: freeDelivery ? 0 : Math.max(0, Number(fee) || 0),
+            outsideDeliveryCharge: freeDelivery ? 0 : Math.max(0, Number(outsideFee) || 0),
           });
           setMsg("সেভ হয়েছে ✅");
         }}
