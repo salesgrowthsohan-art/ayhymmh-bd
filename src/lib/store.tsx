@@ -27,7 +27,10 @@ export type Product = {
 
 export type Settings = {
   whatsapp: string;
+  /** Delivery fee inside Dhaka. */
   deliveryCharge: number;
+  /** Delivery fee outside Dhaka. */
+  outsideDeliveryCharge: number;
   adminPassword: string;
   categories: string[];
 };
@@ -44,6 +47,7 @@ const KEYS = {
 export const DEFAULT_SETTINGS: Settings = {
   whatsapp: "01630871105",
   deliveryCharge: 60,
+  outsideDeliveryCharge: 120,
   adminPassword: "1240928",
   categories: ["flag", "keychain", "face mask", "miniature"],
 };

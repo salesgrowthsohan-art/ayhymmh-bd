@@ -5,9 +5,14 @@ import { lineTitle, maxQty, taka, useStore } from "@/lib/store";
 type Form = { name: string; phone: string; address: string };
 
 export function CartSheet({ onClose }: { onClose: () => void }) {
-  const { cart, products, settings, subtotal, total, setQty, removeFromCart, waLink } = useStore();
+  const { cart, products, settings, subtotal, setQty, removeFromCart, waLink } = useStore();
   const [form, setForm] = useState<Form>({ name: "", phone: "", address: "" });
+  const [area, setArea] = useState<"dhaka" | "outside">("dhaka");
   const [errors, setErrors] = useState<Partial<Form>>({});
+
+  const delivery =
+    area === "dhaka" ? settings.deliveryCharge : settings.outsideDeliveryCharge;
+  const total = subtotal + (cart.length ? delivery : 0);
 
   const lines = cart.flatMap((l) => {
     const p = products.find((x) => x.sku === l.sku);
@@ -35,12 +40,13 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
       ),
       "",
       `Subtotal: ${taka(subtotal)}`,
-      `Delivery: ${settings.deliveryCharge > 0 ? taka(settings.deliveryCharge) : "Free"}`,
+      `Delivery (${area === "dhaka" ? "Inside Dhaka" : "Outside Dhaka"}): ${delivery > 0 ? taka(delivery) : "Free"}`,
       `Total (incl. delivery): ${taka(total)}`,
       "",
       `👤 Name: ${form.name.trim()}`,
       `📞 Phone: ${form.phone.trim()}`,
-      `📍 Address: ${form.address.trim()}`,
+      `📍 Area: ${area === "dhaka" ? "Inside Dhaka" : "Outside Dhaka"}`,
+      `🏠 Address: ${form.address.trim()}`,
       "",
       "Payment: bKash / Cash on Delivery",
     ].join("\n");
@@ -110,7 +116,33 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
 
           {lines.length > 0 && (
             <>
-              <dl className="mt-5 space-y-1 border-t-2 border-dashed border-ink/30 pt-4 text-sm">
+              <fieldset className="mt-5 border-t-2 border-dashed border-ink/30 pt-4">
+                <legend className="text-sm font-bold">Delivery area *</legend>
+                <div className="mt-2 grid grid-cols-2 gap-2">
+                  {(
+                    [
+                      { id: "dhaka", label: "Inside Dhaka", fee: settings.deliveryCharge },
+                      { id: "outside", label: "Outside Dhaka", fee: settings.outsideDeliveryCharge },
+                    ] as const
+                  ).map((o) => (
+                    <button
+                      key={o.id}
+                      type="button"
+                      aria-pressed={area === o.id}
+                      onClick={() => setArea(o.id)}
+                      className={`brutal-sm press rounded-xl px-3 py-2 text-sm font-bold ${
+                        area === o.id ? "bg-brand" : "bg-white"
+                      }`}
+                    >
+                      {o.label}
+                      <span className="block text-xs font-semibold">
+                        {o.fee > 0 ? taka(o.fee) : "Free"}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
+              <dl className="mt-4 space-y-1 border-t-2 border-dashed border-ink/30 pt-4 text-sm">
                 <div className="flex justify-between">
                   <dt>Subtotal</dt>
                   <dd className="font-semibold">{taka(subtotal)}</dd>
@@ -118,7 +150,7 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
                 <div className="flex justify-between">
                   <dt>Delivery Charge</dt>
                   <dd className="font-semibold">
-                    {settings.deliveryCharge > 0 ? taka(settings.deliveryCharge) : "Free"}
+                    {delivery > 0 ? taka(delivery) : "Free"}
                   </dd>
                 </div>
                 <div className="flex justify-between text-base font-bold">
