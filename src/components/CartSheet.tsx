@@ -10,8 +10,7 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
   const [area, setArea] = useState<"dhaka" | "outside">("dhaka");
   const [errors, setErrors] = useState<Partial<Form>>({});
 
-  const delivery =
-    area === "dhaka" ? settings.deliveryCharge : settings.outsideDeliveryCharge;
+  const delivery = area === "dhaka" ? settings.deliveryCharge : settings.outsideDeliveryCharge;
   const total = subtotal + (cart.length ? delivery : 0);
 
   const lines = cart.flatMap((l) => {
@@ -35,8 +34,7 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
       "🛍️ New Order from Website",
       "",
       ...lines.map(
-        (l, i) =>
-          `${i + 1}. ${lineTitle(l.product)} × ${l.qty} — ${taka(l.product.price * l.qty)}`,
+        (l, i) => `${i + 1}. ${lineTitle(l.product)} × ${l.qty} — ${taka(l.product.price * l.qty)}`,
       ),
       "",
       `Subtotal: ${taka(subtotal)}`,
@@ -62,7 +60,10 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
       <div className="sheet-in relative flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-3xl border-2 border-ink bg-background sm:max-w-lg sm:rounded-3xl">
         <div className="flex items-center justify-between border-b-2 border-ink bg-brand-soft px-4 py-3">
           <h2 className="font-display text-lg font-bold">Your Cart</h2>
-          <button onClick={onClose} className="brutal-sm press rounded-full bg-white px-3 py-1 text-sm font-bold">
+          <button
+            onClick={onClose}
+            className="brutal-sm press rounded-full bg-white px-3 py-1 text-sm font-bold"
+          >
             ✕
           </button>
         </div>
@@ -122,7 +123,11 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
                   {(
                     [
                       { id: "dhaka", label: "Inside Dhaka", fee: settings.deliveryCharge },
-                      { id: "outside", label: "Outside Dhaka", fee: settings.outsideDeliveryCharge },
+                      {
+                        id: "outside",
+                        label: "Outside Dhaka",
+                        fee: settings.outsideDeliveryCharge,
+                      },
                     ] as const
                   ).map((o) => (
                     <button
@@ -149,9 +154,7 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
                 </div>
                 <div className="flex justify-between">
                   <dt>Delivery Charge</dt>
-                  <dd className="font-semibold">
-                    {delivery > 0 ? taka(delivery) : "Free"}
-                  </dd>
+                  <dd className="font-semibold">{delivery > 0 ? taka(delivery) : "Free"}</dd>
                 </div>
                 <div className="flex justify-between text-base font-bold">
                   <dt>Total (incl. delivery)</dt>

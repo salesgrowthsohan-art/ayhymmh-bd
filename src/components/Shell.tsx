@@ -38,7 +38,9 @@ function Footer() {
   return (
     <footer className="mt-16 border-t-2 border-ink bg-brand-wash">
       <div className="mx-auto max-w-6xl px-4 py-8 text-sm">
-        <p className="flex items-center gap-2 font-display text-lg font-bold">ayhymmh <BdFlag className="h-3.5 w-auto border border-ink" /></p>
+        <p className="flex items-center gap-2 font-display text-lg font-bold">
+          ayhymmh <BdFlag className="h-3.5 w-auto border border-ink" />
+        </p>
         <p className="mt-1 text-muted-foreground">
           1–2 day delivery in Dhaka · Payment: bKash or Cash on Delivery
         </p>

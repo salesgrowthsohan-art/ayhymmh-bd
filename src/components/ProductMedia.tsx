@@ -28,7 +28,11 @@ export function ProductMedia({
   }, [src]);
 
   if (!src || failed) {
-    return <div className={`${className ?? ""} grid place-items-center bg-brand-wash text-xs font-bold`}>NO MEDIA</div>;
+    return (
+      <div className={`${className ?? ""} grid place-items-center bg-brand-wash text-xs font-bold`}>
+        NO MEDIA
+      </div>
+    );
   }
 
   if (isVideoMedia(src)) {

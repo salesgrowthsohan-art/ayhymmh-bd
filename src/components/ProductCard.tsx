@@ -1,7 +1,16 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, Minus, Plus, Sparkles } from "lucide-react";
 import { ProductMedia } from "@/components/ProductMedia";
-import { canOrder, categoryLabel, isPreOrder, maxQty, stockStatus, taka, unitsLeft, type Product } from "@/lib/store";
+import {
+  canOrder,
+  categoryLabel,
+  isPreOrder,
+  maxQty,
+  stockStatus,
+  taka,
+  unitsLeft,
+  type Product,
+} from "@/lib/store";
 
 export function ProductCard({
   product,
@@ -20,7 +29,10 @@ export function ProductCard({
   const available = canOrder(product);
   const pre = isPreOrder(product);
   return (
-    <article data-stock-status={status} className="product-card rise flex min-w-0 flex-col overflow-hidden bg-card">
+    <article
+      data-stock-status={status}
+      className="product-card rise flex min-w-0 flex-col overflow-hidden bg-card"
+    >
       <Link
         to="/product/$sku"
         params={{ sku: product.sku }}
@@ -33,7 +45,9 @@ export function ProductCard({
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.035]"
         />
         {status === "out" && (
-          <span className={`absolute left-2 top-2 border-2 border-ink px-2 py-1 text-[10px] font-bold uppercase ${pre ? "bg-brand-soft" : "bg-card"}`}>
+          <span
+            className={`absolute left-2 top-2 border-2 border-ink px-2 py-1 text-[10px] font-bold uppercase ${pre ? "bg-brand-soft" : "bg-card"}`}
+          >
             {pre ? "Pre-order" : "Stock out"}
           </span>
         )}
@@ -43,7 +57,10 @@ export function ProductCard({
           </span>
         )}
         {quantity > 0 && (
-          <span className="quantity-badge absolute right-2 top-2 grid min-h-11 min-w-11 place-items-center border-2 border-ink bg-brand px-2 text-base font-bold" aria-label={`${quantity} in cart`}>
+          <span
+            className="quantity-badge absolute right-2 top-2 grid min-h-11 min-w-11 place-items-center border-2 border-ink bg-brand px-2 text-base font-bold"
+            aria-label={`${quantity} in cart`}
+          >
             ×{quantity}
           </span>
         )}
@@ -52,14 +69,21 @@ export function ProductCard({
         </span>
       </Link>
       <div className="flex flex-1 flex-col p-3 sm:p-4">
-        <Link to="/product/$sku" params={{ sku: product.sku }} className="line-clamp-2 min-h-10 text-sm font-bold leading-snug sm:text-base">
+        <Link
+          to="/product/$sku"
+          params={{ sku: product.sku }}
+          className="line-clamp-2 min-h-10 text-sm font-bold leading-snug sm:text-base"
+        >
           {product.title}
         </Link>
         <div className="mt-2 flex items-center justify-end gap-2">
           <p className="font-display text-lg font-bold">{taka(product.price)}</p>
         </div>
 
-        <div className="mt-3 grid grid-cols-[44px_1fr_44px] items-center border-2 border-ink bg-background" aria-label="Quantity selector">
+        <div
+          className="mt-3 grid grid-cols-[44px_1fr_44px] items-center border-2 border-ink bg-background"
+          aria-label="Quantity selector"
+        >
           <button
             type="button"
             aria-label={`Decrease ${product.title}`}
@@ -85,7 +109,10 @@ export function ProductCard({
           onClick={() => onAdd(product.sku)}
           className="cart-cta press mt-3 flex min-h-12 items-center justify-between gap-2 border-2 border-ink bg-brand px-3 text-sm font-bold uppercase disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
         >
-          <span className="flex items-center gap-2"><Sparkles size={17} aria-hidden />{pre ? "Pre-order" : available ? "Add to Cart" : "Stock out"}</span>
+          <span className="flex items-center gap-2">
+            <Sparkles size={17} aria-hidden />
+            {pre ? "Pre-order" : available ? "Add to Cart" : "Stock out"}
+          </span>
           {available && <ArrowUpRight size={21} strokeWidth={3} aria-hidden />}
         </button>
       </div>

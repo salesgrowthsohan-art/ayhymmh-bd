@@ -1,20 +1,29 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useUi } from "@/components/Shell";
 import { ProductMedia } from "@/components/ProductMedia";
-import { canOrder, categoryLabel, isPreOrder, lineTitle, stockStatus, taka, unitsLeft, useStore } from "@/lib/store";
+import {
+  canOrder,
+  categoryLabel,
+  isPreOrder,
+  lineTitle,
+  stockStatus,
+  taka,
+  unitsLeft,
+  useStore,
+} from "@/lib/store";
 
 export const Route = createFileRoute("/product/$sku")({
   head: ({ params }) => ({
     meta: [
-      { title: `${params.sku} — ayhymmh Keychain & Flag` },
+      { title: `${params.sku} | YOUR STORE NAME` },
       {
         name: "description",
-        content: `Keychain ${params.sku} — price, availability and delivery info. Order directly on WhatsApp.`,
+        content: `TODO: Replace with your product page description for ${params.sku}.`,
       },
-      { property: "og:title", content: `${params.sku} — ayhymmh` },
+      { property: "og:title", content: `${params.sku} | YOUR STORE NAME` },
       {
         property: "og:description",
-        content: "Cute keychain, 1–2 day delivery in Dhaka, bKash or Cash on Delivery.",
+        content: "TODO: Replace with your product social preview description.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -35,7 +44,10 @@ function ProductDetail() {
         <p className="font-display text-xl font-bold">
           {hydrated ? "Product not found" : "Loading…"}
         </p>
-        <Link to="/" className="brutal-sm press mt-5 inline-block rounded-2xl bg-brand px-4 py-2 font-bold">
+        <Link
+          to="/"
+          className="brutal-sm press mt-5 inline-block rounded-2xl bg-brand px-4 py-2 font-bold"
+        >
           See all products
         </Link>
       </div>
@@ -97,14 +109,24 @@ function ProductDetail() {
           </span>
           <h1 className="mt-3 text-2xl font-bold sm:text-3xl">{product.title}</h1>
           <p className="mt-3 font-display text-3xl font-bold">{taka(product.price)}</p>
-          <p className={`mt-1 text-sm font-bold ${status === "out" ? "text-destructive" : "text-success"}`}>
-            {pre ? "Pre-order open — ships when restocked" : status === "out" ? "Stock out" : status === "low" ? `Hurry — only ${unitsLeft(product)} left` : "In stock"}
+          <p
+            className={`mt-1 text-sm font-bold ${status === "out" ? "text-destructive" : "text-success"}`}
+          >
+            {pre
+              ? "Pre-order open — ships when restocked"
+              : status === "out"
+                ? "Stock out"
+                : status === "low"
+                  ? `Hurry — only ${unitsLeft(product)} left`
+                  : "In stock"}
           </p>
 
           <p className="mt-4 text-sm leading-relaxed">{product.description}</p>
 
           <div className="mt-4 flex flex-wrap gap-2 text-xs font-bold">
-            <span className="brutal-sm rounded-full bg-lilac px-3 py-1">bKash / Cash on Delivery</span>
+            <span className="brutal-sm rounded-full bg-lilac px-3 py-1">
+              bKash / Cash on Delivery
+            </span>
             <span className="brutal-sm rounded-full bg-white px-3 py-1">Dhaka 1–2 days</span>
           </div>
 

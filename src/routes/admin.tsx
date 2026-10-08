@@ -2,16 +2,31 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronDown, ChevronUp, Home, ImagePlus, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ProductMedia } from "@/components/ProductMedia";
-import { categoryLabel, LOW_STOCK, stockStatus, taka, unitsLeft, useStore, type Category, type Product } from "@/lib/store";
+import {
+  categoryLabel,
+  LOW_STOCK,
+  stockStatus,
+  taka,
+  unitsLeft,
+  useStore,
+  type Category,
+  type Product,
+} from "@/lib/store";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
-      { title: "Admin — ayhymmh" },
-      { name: "description", content: "ayhymmh স্টোরের প্রোডাক্ট ও সেটিংস ম্যানেজমেন্ট।" },
+      { title: "Admin | YOUR STORE NAME" },
+      {
+        name: "description",
+        content: "TODO: Replace with a description for your store administration page.",
+      },
       { name: "robots", content: "noindex" },
-      { property: "og:title", content: "Admin — ayhymmh" },
-      { property: "og:description", content: "Store admin panel." },
+      { property: "og:title", content: "Admin | YOUR STORE NAME" },
+      {
+        property: "og:description",
+        content: "TODO: Replace with your store administration preview description.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -57,7 +72,6 @@ function Admin() {
       for (const e of events) window.removeEventListener(e, reset);
     };
   }, [isAdmin, logout]);
-
 
   if (!isAdmin) {
     const locked = Date.now() < lockedUntil;
@@ -117,7 +131,10 @@ function Admin() {
     <div className="mx-auto max-w-4xl space-y-6 px-4 py-6">
       <div className="flex items-center justify-between">
         <h1 className="font-display text-2xl font-bold">Admin Panel</h1>
-        <button onClick={logout} className="brutal-sm press rounded-full bg-white px-3 py-1.5 text-sm font-bold">
+        <button
+          onClick={logout}
+          className="brutal-sm press rounded-full bg-white px-3 py-1.5 text-sm font-bold"
+        >
           Logout
         </button>
       </div>
@@ -149,7 +166,9 @@ function ProductManager() {
     const selected = Array.from(files).slice(0, 4);
     const totalSize = selected.reduce((sum, file) => sum + file.size, 0);
     if (selected.some((file) => file.size > 800_000) || totalSize > 1_800_000) {
-      setMediaError("প্রতি file 800KB এবং সব মিলিয়ে 1.8MB-এর মধ্যে রাখুন, তাহলে স্টোর দ্রুত থাকবে।");
+      setMediaError(
+        "প্রতি file 800KB এবং সব মিলিয়ে 1.8MB-এর মধ্যে রাখুন, তাহলে স্টোর দ্রুত থাকবে।",
+      );
       return;
     }
     const encoded = await Promise.all(
@@ -188,13 +207,19 @@ function ProductManager() {
     <section className={card}>
       <div className="flex items-center justify-between">
         <h2 className="font-display text-lg font-bold">Product Manager</h2>
-        <button onClick={startNew} className="brutal-sm press rounded-full bg-brand px-3 py-1.5 text-sm font-bold">
+        <button
+          onClick={startNew}
+          className="brutal-sm press rounded-full bg-brand px-3 py-1.5 text-sm font-bold"
+        >
           + Add product
         </button>
       </div>
 
       {draft && (
-        <form onSubmit={submit} className="mt-4 space-y-3 rounded-2xl border-2 border-dashed border-ink/40 p-3">
+        <form
+          onSubmit={submit}
+          className="mt-4 space-y-3 rounded-2xl border-2 border-dashed border-ink/40 p-3"
+        >
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="block text-sm font-semibold">
               Title *
@@ -229,7 +254,11 @@ function ProductManager() {
               Category *
               <select
                 className={field}
-                value={settings.categories.includes(draft.category) ? draft.category : settings.categories[0]}
+                value={
+                  settings.categories.includes(draft.category)
+                    ? draft.category
+                    : settings.categories[0]
+                }
                 onChange={(e) => setDraft({ ...draft, category: e.target.value as Category })}
               >
                 {settings.categories.map((c) => (
@@ -265,7 +294,9 @@ function ProductManager() {
           >
             <ImagePlus size={18} aria-hidden /> ছবি / ভিডিও Upload
           </button>
-          <p className="text-xs text-muted-foreground">সর্বোচ্চ ৪টি, সব মিলিয়ে 1.8MB। প্রথম media-টি product cover হবে।</p>
+          <p className="text-xs text-muted-foreground">
+            সর্বোচ্চ ৪টি, সব মিলিয়ে 1.8MB। প্রথম media-টি product cover হবে।
+          </p>
           {mediaError && <p className="text-xs font-semibold text-destructive">{mediaError}</p>}
           <label className="block text-sm font-semibold">
             Description
@@ -286,7 +317,13 @@ function ProductManager() {
               value={draft.stock ?? ""}
               placeholder="e.g. 20"
               onChange={(e) =>
-                setDraft({ ...draft, stock: e.target.value === "" ? undefined : Math.max(0, Math.floor(Number(e.target.value))) })
+                setDraft({
+                  ...draft,
+                  stock:
+                    e.target.value === ""
+                      ? undefined
+                      : Math.max(0, Math.floor(Number(e.target.value))),
+                })
               }
             />
           </label>
@@ -307,7 +344,9 @@ function ProductManager() {
             In stock
           </label>
           <div className="flex gap-2">
-            <button className="brutal-sm press rounded-2xl bg-brand px-4 py-2 font-bold">Save</button>
+            <button className="brutal-sm press rounded-2xl bg-brand px-4 py-2 font-bold">
+              Save
+            </button>
             <button
               type="button"
               onClick={() => setDraft(null)}
@@ -323,20 +362,51 @@ function ProductManager() {
 
       <ul className="mt-4 space-y-2">
         {products.map((p, index) => (
-          <li key={p.id} className="brutal-sm flex items-center gap-3 rounded-2xl bg-brand-wash p-2">
-            <ProductMedia src={p.images[0]} alt={p.title} className="h-12 w-12 rounded-xl border-2 border-ink object-cover" />
+          <li
+            key={p.id}
+            className="brutal-sm flex items-center gap-3 rounded-2xl bg-brand-wash p-2"
+          >
+            <ProductMedia
+              src={p.images[0]}
+              alt={p.title}
+              className="h-12 w-12 rounded-xl border-2 border-ink object-cover"
+            />
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-bold">{p.title}</p>
               <p className="text-xs text-muted-foreground">
                 {taka(p.price)} · {p.category} ·{" "}
-                <span data-stock-status={stockStatus(p)} className={stockStatus(p) === "ok" ? "" : "font-bold text-destructive"}>
+                <span
+                  data-stock-status={stockStatus(p)}
+                  className={stockStatus(p) === "ok" ? "" : "font-bold text-destructive"}
+                >
                   Stock: {typeof p.stock === "number" ? p.stock : "not set"}
                 </span>
               </p>
               <div className="mt-1 flex items-center gap-1">
-                <button type="button" aria-label={`Stock −1 ${p.title}`} onClick={() => saveProduct({ ...p, stock: Math.max(0, (p.stock ?? 0) - 1) })} className="grid h-7 w-7 place-items-center border-2 border-ink bg-card text-xs font-bold">−</button>
-                <button type="button" aria-pressed={!!p.preOrder} onClick={() => saveProduct({ ...p, preOrder: !p.preOrder })} className={`h-7 border-2 border-ink px-2 text-[11px] font-bold uppercase ${p.preOrder ? "bg-brand" : "bg-card"}`}>{p.preOrder ? "Pre-order: on" : "Pre-order: off"}</button>
-                <button type="button" aria-label={`Stock +1 ${p.title}`} onClick={() => saveProduct({ ...p, stock: (p.stock ?? 0) + 1 })} className="grid h-7 w-7 place-items-center border-2 border-ink bg-mint text-xs font-bold">+</button>
+                <button
+                  type="button"
+                  aria-label={`Stock −1 ${p.title}`}
+                  onClick={() => saveProduct({ ...p, stock: Math.max(0, (p.stock ?? 0) - 1) })}
+                  className="grid h-7 w-7 place-items-center border-2 border-ink bg-card text-xs font-bold"
+                >
+                  −
+                </button>
+                <button
+                  type="button"
+                  aria-pressed={!!p.preOrder}
+                  onClick={() => saveProduct({ ...p, preOrder: !p.preOrder })}
+                  className={`h-7 border-2 border-ink px-2 text-[11px] font-bold uppercase ${p.preOrder ? "bg-brand" : "bg-card"}`}
+                >
+                  {p.preOrder ? "Pre-order: on" : "Pre-order: off"}
+                </button>
+                <button
+                  type="button"
+                  aria-label={`Stock +1 ${p.title}`}
+                  onClick={() => saveProduct({ ...p, stock: (p.stock ?? 0) + 1 })}
+                  className="grid h-7 w-7 place-items-center border-2 border-ink bg-mint text-xs font-bold"
+                >
+                  +
+                </button>
               </div>
               <button
                 type="button"
@@ -348,10 +418,22 @@ function ProductManager() {
               </button>
             </div>
             <div className="flex shrink-0 flex-col gap-1">
-              <button type="button" disabled={index === 0} aria-label={`${p.title} উপরে নিন`} onClick={() => moveProduct(p.id, -1)} className="grid h-7 w-7 place-items-center border-2 border-ink bg-card disabled:opacity-25">
+              <button
+                type="button"
+                disabled={index === 0}
+                aria-label={`${p.title} উপরে নিন`}
+                onClick={() => moveProduct(p.id, -1)}
+                className="grid h-7 w-7 place-items-center border-2 border-ink bg-card disabled:opacity-25"
+              >
                 <ChevronUp size={15} />
               </button>
-              <button type="button" disabled={index === products.length - 1} aria-label={`${p.title} নিচে নিন`} onClick={() => moveProduct(p.id, 1)} className="grid h-7 w-7 place-items-center border-2 border-ink bg-card disabled:opacity-25">
+              <button
+                type="button"
+                disabled={index === products.length - 1}
+                aria-label={`${p.title} নিচে নিন`}
+                onClick={() => moveProduct(p.id, 1)}
+                className="grid h-7 w-7 place-items-center border-2 border-ink bg-card disabled:opacity-25"
+              >
                 <ChevronDown size={15} />
               </button>
             </div>
@@ -377,17 +459,25 @@ function StockAlert() {
   const out = products.filter((p) => stockStatus(p) === "out");
   const low = products.filter((p) => stockStatus(p) === "low");
   return (
-    <div id="stock-alert" aria-label="Stock alert" className="mt-4 border-2 border-ink bg-pop/40 p-3 text-sm">
+    <div
+      id="stock-alert"
+      aria-label="Stock alert"
+      className="mt-4 border-2 border-ink bg-pop/40 p-3 text-sm"
+    >
       <p className="font-bold">Stock alert</p>
       {!out.length && !low.length ? (
         <p className="text-xs">All products have enough stock.</p>
       ) : (
         <ul className="mt-1 space-y-0.5 text-xs">
           {out.map((p) => (
-            <li key={p.id} data-stock-status="out"><b>SOLD OUT:</b> {p.title}</li>
+            <li key={p.id} data-stock-status="out">
+              <b>SOLD OUT:</b> {p.title}
+            </li>
           ))}
           {low.map((p) => (
-            <li key={p.id} data-stock-status="low"><b>LOW ({unitsLeft(p)} left):</b> {p.title}</li>
+            <li key={p.id} data-stock-status="low">
+              <b>LOW ({unitsLeft(p)} left):</b> {p.title}
+            </li>
           ))}
         </ul>
       )}
@@ -423,7 +513,12 @@ function StoreSettings() {
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <label className="block text-sm font-semibold">
           WhatsApp number
-          <input className={field} value={wa} maxLength={15} onChange={(e) => setWa(e.target.value)} />
+          <input
+            className={field}
+            value={wa}
+            maxLength={15}
+            onChange={(e) => setWa(e.target.value)}
+          />
         </label>
         <label className="block text-sm font-semibold">
           Delivery charge — ঢাকার ভিতরে (৳)
@@ -530,11 +625,21 @@ function StoreSettings() {
         <div className="mt-2 grid gap-3 sm:grid-cols-2">
           <label className="block text-sm font-semibold">
             নতুন পাসওয়ার্ড
-            <input type="password" className={field} value={pw1} onChange={(e) => setPw1(e.target.value)} />
+            <input
+              type="password"
+              className={field}
+              value={pw1}
+              onChange={(e) => setPw1(e.target.value)}
+            />
           </label>
           <label className="block text-sm font-semibold">
             আবার লিখুন
-            <input type="password" className={field} value={pw2} onChange={(e) => setPw2(e.target.value)} />
+            <input
+              type="password"
+              className={field}
+              value={pw2}
+              onChange={(e) => setPw2(e.target.value)}
+            />
           </label>
         </div>
         <button

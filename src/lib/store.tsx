@@ -52,8 +52,7 @@ export const DEFAULT_SETTINGS: Settings = {
   categories: ["flag", "keychain", "face mask", "miniature"],
 };
 
-const U = (id: string) =>
-  `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=800&q=70`;
+const U = (id: string) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=800&q=70`;
 
 export const SEED_PRODUCTS: Product[] = [
   {
@@ -63,8 +62,7 @@ export const SEED_PRODUCTS: Product[] = [
     price: 120,
     images: [U("1588412079929-790b9f593d8e"), U("1606107557195-0e29a4b5b4aa")],
     category: "flag",
-    description:
-      "Metal base, enamel finish. A tiny red-green pride for your bag or keys.",
+    description: "Metal base, enamel finish. A tiny red-green pride for your bag or keys.",
     inStock: true,
     stock: 12,
   },
@@ -95,7 +93,7 @@ export const SEED_PRODUCTS: Product[] = [
     title: "Cute Bear Charm",
     sku: "KC-04",
     price: 100,
-    images: [U("1530325553146-1b0bfa00a1b4"), U("1591561954557-26941169b49e")],
+    images: [U("1591561954557-26941169b49e"), U("1591561954557-26941169b49e")],
     category: "keychain",
     description: "Soft plush teddy charm, perfect for bags.",
     inStock: true,
@@ -117,7 +115,7 @@ export const SEED_PRODUCTS: Product[] = [
     title: "Heart Acrylic Keyring",
     sku: "KC-06",
     price: 110,
-    images: [U("1549298916-b41d501d3772"), U("1530325553146-1b0bfa00a1b4")],
+    images: [U("1549298916-b41d501d3772"), U("1591561954557-26941169b49e")],
     category: "keychain",
     description: "Glossy acrylic heart in pink. A great gift.",
     inStock: true,
@@ -274,9 +272,7 @@ export function useStore() {
 
 export const taka = (n: number) => `৳${n.toLocaleString("en-US")}`;
 
-export const categoryLabel = (c: string) =>
-  c.charAt(0).toUpperCase() + c.slice(1);
-
+export const categoryLabel = (c: string) => c.charAt(0).toUpperCase() + c.slice(1);
 
 export const LOW_STOCK = 6;
 

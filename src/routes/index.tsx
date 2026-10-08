@@ -6,16 +6,15 @@ import { categoryLabel, useStore, type Category } from "@/lib/store";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "ayhymmh — Premium Keychain & Flag Store Bangladesh" },
+      { title: "YOUR STORE NAME | Online Store" },
       {
         name: "description",
-        content:
-          "Flag keychains, cute charms, face masks and miniatures. bKash or Cash on Delivery, 1–2 day delivery in Dhaka.",
+        content: "TODO: Replace with a concise description of your store and its main offering.",
       },
-      { property: "og:title", content: "ayhymmh — Premium Keychain & Flag Store" },
+      { property: "og:title", content: "YOUR STORE NAME | Online Store" },
       {
         property: "og:description",
-        content: "Order keychains and flags on WhatsApp — 1–2 day delivery in Dhaka.",
+        content: "TODO: Replace with your social preview description.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -44,9 +43,7 @@ function Home() {
     return products.filter(
       (p) =>
         (tab === "all" || p.category === tab) &&
-        (!needle ||
-          p.title.toLowerCase().includes(needle) ||
-          p.sku.toLowerCase().includes(needle)),
+        (!needle || p.title.toLowerCase().includes(needle) || p.sku.toLowerCase().includes(needle)),
     );
   }, [products, tab, q]);
 
@@ -76,7 +73,11 @@ function Home() {
             ✨
           </div>
         </div>
-        <div aria-hidden className="floaty absolute bottom-3 right-3 z-10" style={{ animationDelay: "-2s" }}>
+        <div
+          aria-hidden
+          className="floaty absolute bottom-3 right-3 z-10"
+          style={{ animationDelay: "-2s" }}
+        >
           <div className="grid h-11 w-11 rotate-12 place-items-center rounded-xl border-2 border-ink bg-signal shadow-[3px_3px_0_0_var(--ink)]">
             <span className="block h-3 w-3 rounded-full border-[3px] border-ink bg-card" />
           </div>
@@ -86,7 +87,11 @@ function Home() {
           <div className="grid items-end gap-5 sm:grid-cols-[1.5fr_0.7fr]">
             <div>
               <h1 className="text-4xl font-bold uppercase leading-[0.92] sm:text-6xl">
-                Pick it.<br />Clip it.<br /><span className="text-brand">Make it yours.</span>
+                Pick it.
+                <br />
+                Clip it.
+                <br />
+                <span className="text-brand">Make it yours.</span>
               </h1>
             </div>
             <div className="border-3 border-ink bg-ink p-4 text-primary-foreground shadow-[6px_6px_0_0_var(--brand)]">
@@ -94,22 +99,19 @@ function Home() {
             </div>
           </div>
           <div className="mt-5 flex flex-wrap gap-3">
-          <a
-            href="#collection"
-            className="brutal press bg-brand px-4 py-2.5 text-sm font-bold"
-          >
-            Shop the drop →
-          </a>
-          <a
-            href={waLink(
-              "🔎 Follow up on my order\n\n👤 Name: \n📞 Phone: \n🧾 Order details: \n\n(Fill in the details above — we will send you the status.)",
-            )}
-            target="_blank"
-            rel="noreferrer"
-            className="brutal-sm press bg-card px-4 py-2.5 text-sm font-bold"
-          >
-            Follow up on my order
-          </a>
+            <a href="#collection" className="brutal press bg-brand px-4 py-2.5 text-sm font-bold">
+              Shop the drop →
+            </a>
+            <a
+              href={waLink(
+                "🔎 Follow up on my order\n\n👤 Name: \n📞 Phone: \n🧾 Order details: \n\n(Fill in the details above — we will send you the status.)",
+              )}
+              target="_blank"
+              rel="noreferrer"
+              className="brutal-sm press bg-card px-4 py-2.5 text-sm font-bold"
+            >
+              Follow up on my order
+            </a>
           </div>
         </div>
       </section>
