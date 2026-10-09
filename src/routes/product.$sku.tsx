@@ -15,15 +15,15 @@ import {
 export const Route = createFileRoute("/product/$sku")({
   head: ({ params }) => ({
     meta: [
-      { title: `${params.sku} | YOUR STORE NAME` },
+      { title: `${params.sku} | Ayhymmh` },
       {
         name: "description",
-        content: `TODO: Replace with your product page description for ${params.sku}.`,
+        content: `View ${params.sku} from Ayhymmh meme apparel and order by WhatsApp.`,
       },
-      { property: "og:title", content: `${params.sku} | YOUR STORE NAME` },
+      { property: "og:title", content: `${params.sku} | Ayhymmh` },
       {
         property: "og:description",
-        content: "TODO: Replace with your product social preview description.",
+        content: "View this Ayhymmh product and order by WhatsApp with bKash or Cash on Delivery.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

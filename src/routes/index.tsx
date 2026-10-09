@@ -6,15 +6,17 @@ import { categoryLabel, useStore, type Category } from "@/lib/store";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "YOUR STORE NAME | Online Store" },
+      { title: "Ayhymmh | Meme Apparel from Dhaka" },
       {
         name: "description",
-        content: "TODO: Replace with a concise description of your store and its main offering.",
+        content:
+          "Meme apparel and accessories from Dhaka. Shop limited drops and order directly by WhatsApp.",
       },
-      { property: "og:title", content: "YOUR STORE NAME | Online Store" },
+      { property: "og:title", content: "Ayhymmh | Meme Apparel from Dhaka" },
       {
         property: "og:description",
-        content: "TODO: Replace with your social preview description.",
+        content:
+          "Meme apparel and accessories from Dhaka. Shop limited drops and order directly by WhatsApp.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

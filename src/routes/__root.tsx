@@ -76,17 +76,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "YOUR STORE NAME | Online Store" },
+      { title: "Ayhymmh | Meme Apparel from Dhaka" },
       {
         name: "description",
-        content: "TODO: Replace with your store description for search and social previews.",
+        content:
+          "Meme apparel and accessories from Dhaka with delivery across Bangladesh. Order by WhatsApp with bKash or Cash on Delivery.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:title", content: "YOUR STORE NAME | Online Store" },
-      { property: "og:description", content: "TODO: Replace with your store description." },
+      { property: "og:title", content: "Ayhymmh | Meme Apparel from Dhaka" },
+      {
+        property: "og:description",
+        content: "Meme apparel and accessories from Dhaka with delivery across Bangladesh.",
+      },
       { property: "og:image", content: "/social-preview-placeholder.svg" },
-      { name: "twitter:title", content: "YOUR STORE NAME | Online Store" },
-      { name: "twitter:description", content: "TODO: Replace with your store description." },
+      { name: "twitter:title", content: "Ayhymmh | Meme Apparel from Dhaka" },
+      {
+        name: "twitter:description",
+        content: "Meme apparel and accessories from Dhaka with delivery across Bangladesh.",
+      },
       { name: "twitter:image", content: "/social-preview-placeholder.svg" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

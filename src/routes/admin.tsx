@@ -16,16 +16,16 @@ import {
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
-      { title: "Admin | YOUR STORE NAME" },
+      { title: "Admin | Ayhymmh" },
       {
         name: "description",
-        content: "TODO: Replace with a description for your store administration page.",
+        content: "Ayhymmh store administration panel.",
       },
       { name: "robots", content: "noindex" },
-      { property: "og:title", content: "Admin | YOUR STORE NAME" },
+      { property: "og:title", content: "Admin | Ayhymmh" },
       {
         property: "og:description",
-        content: "TODO: Replace with your store administration preview description.",
+        content: "Ayhymmh store administration panel.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
