@@ -55,15 +55,52 @@ async function sha256Hex(value: string) {
   return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
-async function verifyAdmin(password: string) {
-  if (password.length < 16 || password.length > 256) return false;
-  const { data, error } = await client()
+async function verifyAdmin(req: Request, password: string): Promise<"ok" | "invalid" | "blocked"> {
+  if (password.length < 7 || password.length > 256) return "invalid";
+  const db = client();
+  const ip =
+    req.headers.get("cf-connecting-ip") ??
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    req.headers.get("x-real-ip") ??
+    "unknown";
+  const ipHash = await sha256Hex(`store-admin:${ip}`);
+  const { data: attempt, error: attemptError } = await db
+    .from("store_admin_login_attempts")
+    .select("failed_count, window_started_at, blocked_until")
+    .eq("ip_hash", ipHash)
+    .maybeSingle();
+  if (attemptError) return "blocked";
+  const now = Date.now();
+  const blockedUntil = attempt?.blocked_until ? Date.parse(attempt.blocked_until) : 0;
+  if (blockedUntil > now) return "blocked";
+
+  const { data, error } = await db
     .from("store_admin_auth")
     .select("password_hash")
     .eq("id", 1)
     .maybeSingle();
-  if (error || !data?.password_hash) return false;
-  return constantTimeEquals(await sha256Hex(password), data.password_hash);
+  if (error || !data?.password_hash) return "blocked";
+  const matches = constantTimeEquals(await sha256Hex(password), data.password_hash);
+  if (matches) {
+    await db.from("store_admin_login_attempts").delete().eq("ip_hash", ipHash);
+    return "ok";
+  }
+
+  const startedAt = attempt?.window_started_at ? Date.parse(attempt.window_started_at) : 0;
+  const withinWindow = !!attempt && Number.isFinite(startedAt) && now - startedAt < 15 * 60_000;
+  const failures = withinWindow ? attempt.failed_count + 1 : 1;
+  const locked = failures >= 5;
+  await db.from("store_admin_login_attempts").upsert(
+    {
+      ip_hash: ipHash,
+      failed_count: failures,
+      window_started_at: withinWindow ? attempt.window_started_at : new Date(now).toISOString(),
+      blocked_until: locked ? new Date(now + 15 * 60_000).toISOString() : null,
+      updated_at: new Date(now).toISOString(),
+    },
+    { onConflict: "ip_hash" },
+  );
+  return locked ? "blocked" : "invalid";
 }
 
 function publicSettings(value: unknown): PublicSettings {
@@ -176,8 +213,13 @@ async function handle(req: Request) {
   }
 
   const password = req.headers.get("x-admin-password") ?? "";
-  const authenticated = await verifyAdmin(password);
-  if (!authenticated) return json({ error: "Unauthorized" }, 401);
+  const authStatus = await verifyAdmin(req, password);
+  if (authStatus === "blocked")
+    return json(
+      { error: "Too many attempts or auth service unavailable. Try again in 15 minutes." },
+      429,
+    );
+  if (authStatus !== "ok") return json({ error: "Unauthorized" }, 401);
 
   if (action === "login") return json({ ok: true });
 
@@ -269,8 +311,8 @@ async function handle(req: Request) {
 
   if (action === "change-password") {
     const nextPassword = typeof body.newPassword === "string" ? body.newPassword : "";
-    if (nextPassword.length < 16 || nextPassword.length > 256)
-      return json({ error: "New password must be 16–256 characters." }, 400);
+    if (nextPassword.length < 7 || nextPassword.length > 256)
+      return json({ error: "New password must be 7–256 characters." }, 400);
     const { error } = await db.from("store_admin_auth").upsert({
       id: 1,
       password_hash: await sha256Hex(nextPassword),

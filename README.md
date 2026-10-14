@@ -31,7 +31,7 @@ The Edge Function allows public, read-only catalog/settings responses. Product c
 
 For a fresh Supabase setup, apply migrations in filename order and deploy `supabase/functions/store-admin/index.ts` with JWT verification enabled. Supabase supplies its service-role credential to the function runtime; do not paste it into Vercel or commit it. The existing production function and schema have already been provisioned for this shop. No manual secret setup is required in Vercel.
 
-The owner signs in at `/admin` using the private password supplied during setup. Use the **Change admin password** section to rotate it later; new passwords must be at least 16 characters. The admin session is held only in memory and automatically expires after five minutes of inactivity.
+The owner signs in at `/admin` using the private password supplied during setup. Use the **Change admin password** section to rotate it later. The server allows at least seven characters; after five failed attempts from an IP, login is locked for 15 minutes. The admin session is held only in memory and automatically expires after five minutes of inactivity.
 
 ## API
 

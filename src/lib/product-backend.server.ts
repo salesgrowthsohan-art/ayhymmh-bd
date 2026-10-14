@@ -25,7 +25,7 @@ export function adminPasswordFromRequest(request: Request) {
 }
 
 export function authorized(request: Request) {
-  return adminPasswordFromRequest(request).length >= 16;
+  return adminPasswordFromRequest(request).length >= 7;
 }
 
 async function invoke<T>(

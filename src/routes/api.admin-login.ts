@@ -9,7 +9,7 @@ export const Route = createFileRoute("/api/admin-login")({
           const body = (await request.json()) as { password?: unknown };
           if (
             typeof body.password !== "string" ||
-            body.password.length < 16 ||
+            body.password.length < 7 ||
             body.password.length > 256
           )
             return Response.json({ error: "Invalid password." }, { status: 401 });

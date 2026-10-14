@@ -25,7 +25,7 @@ This installation does not configure a separate unattended Manus-agent token. Do
 }
 ```
 
-Admin password changes are made from the Admin page. New passwords must be 16–256 characters and are stored only as a hash.
+Admin password changes are made from the Admin page. Passwords must be 7–256 characters and are stored only as a hash. Five failed checks from one IP trigger a 15-minute lockout.
 
 ## Create or update one product
 

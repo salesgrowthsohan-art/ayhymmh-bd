@@ -15,11 +15,11 @@ export const Route = createFileRoute("/api/admin-password")({
           const body = (await request.json()) as { newPassword?: unknown };
           if (
             typeof body.newPassword !== "string" ||
-            body.newPassword.length < 16 ||
+            body.newPassword.length < 7 ||
             body.newPassword.length > 256
           )
             return Response.json(
-              { error: "New password must be 16–256 characters." },
+              { error: "New password must be 7–256 characters." },
               { status: 400 },
             );
           await changeAdminPassword(adminPasswordFromRequest(request), body.newPassword);

@@ -96,9 +96,9 @@ function Admin() {
               const next = fails + 1;
               setFails(next);
               if (next >= 5) {
-                setLockedUntil(Date.now() + 30_000);
+                setLockedUntil(Date.now() + 15 * 60_000);
                 setFails(0);
-                setErr("৫ বার ভুল পাসওয়ার্ড — ৩০ সেকেন্ডের জন্য লক");
+                setErr("৫ বার ভুল পাসওয়ার্ড — ১৫ মিনিটের জন্য লক");
               } else {
                 setErr("ভুল পাসওয়ার্ড অথবা সার্ভার সংযোগ নেই");
               }
@@ -719,7 +719,7 @@ function StoreSettings() {
         <h3 className="text-sm font-bold">Change admin password</h3>
         <div className="mt-2 grid gap-3 sm:grid-cols-2">
           <label className="block text-sm font-semibold">
-            নতুন পাসওয়ার্ড (অন্তত ১৬ অক্ষর)
+            নতুন পাসওয়ার্ড (অন্তত ৭ অক্ষর)
             <input
               type="password"
               className={field}
@@ -739,7 +739,7 @@ function StoreSettings() {
         </div>
         <button
           onClick={async () => {
-            if (pw1.length < 16) return setMsg("পাসওয়ার্ড অন্তত ১৬ অক্ষরের হতে হবে");
+            if (pw1.length < 7) return setMsg("পাসওয়ার্ড অন্তত ৭ অক্ষরের হতে হবে");
             if (pw1 !== pw2) return setMsg("দুটো পাসওয়ার্ড মেলেনি");
             const updated = await changeAdminPassword(pw1);
             if (!updated) return setMsg("পাসওয়ার্ড বদলানো যায়নি — আবার লগইন করুন");
