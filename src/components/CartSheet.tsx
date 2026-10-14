@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ProductMedia } from "@/components/ProductMedia";
-import { lineTitle, maxQty, taka, useStore } from "@/lib/store";
+import { lineTitle, maxQty, openWhatsApp, taka, useStore } from "@/lib/store";
 
 type Form = { name: string; phone: string; address: string };
 
@@ -48,7 +48,7 @@ export function CartSheet({ onClose }: { onClose: () => void }) {
       "",
       "Payment: bKash / Cash on Delivery",
     ].join("\n");
-    window.open(waLink(msg), "_blank", "noopener");
+    openWhatsApp(waLink(msg));
   };
 
   const field =

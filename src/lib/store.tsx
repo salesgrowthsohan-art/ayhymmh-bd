@@ -167,6 +167,15 @@ type StoreValue = {
 
 const StoreContext = createContext<StoreValue | null>(null);
 
+export function openWhatsApp(url: string) {
+  const popup = window.open(url, "_blank");
+  if (popup) {
+    popup.opener = null;
+    return;
+  }
+  window.location.assign(url);
+}
+
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
   const [products, setProducts] = useState<Product[]>(SEED_PRODUCTS);
@@ -404,8 +413,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         setApiToken("");
       },
       waLink: (message) => {
-        const digits = settings.whatsapp.replace(/\D/g, "");
-        const intl = digits.startsWith("88") ? digits : `88${digits.replace(/^0?/, "0")}`;
+        let digits = settings.whatsapp.replace(/\D/g, "").replace(/^00/, "");
+        if (digits.startsWith("880")) digits = digits.slice(3);
+        else if (digits.startsWith("88")) digits = digits.slice(2);
+        const intl = `880${digits.replace(/^0+/, "")}`;
         return `https://wa.me/${intl}?text=${encodeURIComponent(message)}`;
       },
     };

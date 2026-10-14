@@ -6,6 +6,7 @@ import {
   categoryLabel,
   isPreOrder,
   lineTitle,
+  openWhatsApp,
   stockStatus,
   taka,
   unitsLeft,
@@ -76,7 +77,7 @@ function ProductDetail() {
       "",
       "Payment: bKash / Cash on Delivery",
     ].join("\n");
-    window.open(waLink(msg), "_blank", "noopener");
+    openWhatsApp(waLink(msg));
   };
 
   return (
