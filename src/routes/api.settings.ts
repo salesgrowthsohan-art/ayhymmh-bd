@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import {
+  adminPasswordFromRequest,
   authorized,
-  backendReady,
+  BackendError,
   getStoreSettings,
   saveStoreSettings,
 } from "@/lib/product-backend.server";
@@ -9,13 +10,7 @@ import type { Settings } from "@/lib/store";
 
 const json = (body: unknown, status = 200) =>
   Response.json(body, { status, headers: { "Cache-Control": "no-store" } });
-const configuredError = () =>
-  json(
-    {
-      error: "Shared settings are not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
-    },
-    503,
-  );
+const statusOf = (error: unknown) => (error instanceof BackendError ? error.status : 503);
 const allowedKeys = new Set(["whatsapp", "deliveryCharge", "outsideDeliveryCharge", "categories"]);
 function validSettings(value: unknown): value is Partial<Settings> {
   if (!value || typeof value !== "object" || Array.isArray(value)) return false;
@@ -50,29 +45,31 @@ export const Route = createFileRoute("/api/settings")({
   server: {
     handlers: {
       GET: async () => {
-        if (!backendReady()) return configuredError();
         try {
           return json({ settings: await getStoreSettings() });
-        } catch (error) {
-          console.error("Store settings read failed", error);
+        } catch {
           return json({ error: "Store settings are temporarily unavailable." }, 503);
         }
       },
       POST: async ({ request }) => {
-        if (!backendReady()) return configuredError();
         if (!authorized(request)) return json({ error: "Unauthorized" }, 401);
         try {
           const body = (await request.json()) as { settings?: unknown };
           if (!validSettings(body.settings))
             return json(
-              { error: "Provide valid settings; adminPassword is not exposed through this API." },
+              { error: "Provide valid public settings; admin credentials are never exposed." },
               400,
             );
-          const settings = await saveStoreSettings(body.settings);
+          const settings = await saveStoreSettings(
+            body.settings,
+            adminPasswordFromRequest(request),
+          );
           return json({ ok: true, settings });
         } catch (error) {
-          console.error("Store settings write failed", error);
-          return json({ error: "Could not save store settings." }, 500);
+          return json(
+            { error: error instanceof Error ? error.message : "Could not save store settings." },
+            statusOf(error),
+          );
         }
       },
     },

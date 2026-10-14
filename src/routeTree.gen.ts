@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as ApiAdminLoginRouteImport } from './routes/api.admin-login'
+import { Route as ApiAdminPasswordRouteImport } from './routes/api.admin-password'
 import { Route as ApiMediaUploadRouteImport } from './routes/api.media-upload'
 import { Route as ApiProductsRouteImport } from './routes/api.products'
 import { Route as ApiSettingsRouteImport } from './routes/api.settings'
@@ -24,6 +26,16 @@ const IndexRoute = IndexRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminLoginRoute = ApiAdminLoginRouteImport.update({
+  id: '/api/admin-login',
+  path: '/api/admin-login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminPasswordRoute = ApiAdminPasswordRouteImport.update({
+  id: '/api/admin-password',
+  path: '/api/admin-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiMediaUploadRoute = ApiMediaUploadRouteImport.update({
@@ -50,6 +62,8 @@ const ProductSkuRoute = ProductSkuRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/api/admin-login': typeof ApiAdminLoginRoute
+  '/api/admin-password': typeof ApiAdminPasswordRoute
   '/api/media-upload': typeof ApiMediaUploadRoute
   '/api/products': typeof ApiProductsRoute
   '/api/settings': typeof ApiSettingsRoute
@@ -58,6 +72,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/api/admin-login': typeof ApiAdminLoginRoute
+  '/api/admin-password': typeof ApiAdminPasswordRoute
   '/api/media-upload': typeof ApiMediaUploadRoute
   '/api/products': typeof ApiProductsRoute
   '/api/settings': typeof ApiSettingsRoute
@@ -67,6 +83,8 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/api/admin-login': typeof ApiAdminLoginRoute
+  '/api/admin-password': typeof ApiAdminPasswordRoute
   '/api/media-upload': typeof ApiMediaUploadRoute
   '/api/products': typeof ApiProductsRoute
   '/api/settings': typeof ApiSettingsRoute
@@ -77,6 +95,8 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/api/admin-login'
+    | '/api/admin-password'
     | '/api/media-upload'
     | '/api/products'
     | '/api/settings'
@@ -85,6 +105,8 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
+    | '/api/admin-login'
+    | '/api/admin-password'
     | '/api/media-upload'
     | '/api/products'
     | '/api/settings'
@@ -93,6 +115,8 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/api/admin-login'
+    | '/api/admin-password'
     | '/api/media-upload'
     | '/api/products'
     | '/api/settings'
@@ -102,6 +126,8 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  ApiAdminLoginRoute: typeof ApiAdminLoginRoute
+  ApiAdminPasswordRoute: typeof ApiAdminPasswordRoute
   ApiMediaUploadRoute: typeof ApiMediaUploadRoute
   ApiProductsRoute: typeof ApiProductsRoute
   ApiSettingsRoute: typeof ApiSettingsRoute
@@ -122,6 +148,20 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin-login': {
+      id: '/api/admin-login'
+      path: '/api/admin-login'
+      fullPath: '/api/admin-login'
+      preLoaderRoute: typeof ApiAdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin-password': {
+      id: '/api/admin-password'
+      path: '/api/admin-password'
+      fullPath: '/api/admin-password'
+      preLoaderRoute: typeof ApiAdminPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/media-upload': {
@@ -158,6 +198,8 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  ApiAdminLoginRoute: ApiAdminLoginRoute,
+  ApiAdminPasswordRoute: ApiAdminPasswordRoute,
   ApiMediaUploadRoute: ApiMediaUploadRoute,
   ApiProductsRoute: ApiProductsRoute,
   ApiSettingsRoute: ApiSettingsRoute,

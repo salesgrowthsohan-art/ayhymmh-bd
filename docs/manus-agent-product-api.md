@@ -1,16 +1,18 @@
-# Manus AI agent product API
+# Store management API
 
-The site exposes a server-side product-management API for Manus agents. Set `MANUS_AGENT_API_TOKEN` only in the deployment environment, never in the browser or repository. Requests use HTTPS and the header `Authorization: Bearer <token>`.
+The store's server routes call a Supabase Edge Function that holds all privileged database and storage access. Public catalog reads require only the site's public read path; every change requires the administrator's password in `Authorization: Bearer <admin-password>`. The password is verified server-side against a SHA-256 hash and is never stored in browser localStorage or returned by the API.
+
+This installation does not configure a separate unattended Manus-agent token. Do not share the owner's admin password with automation.
 
 ## Read the public catalog
 
 `GET /api/products` returns `{ "products": [...] }`. This route is public and read-only.
 
-`GET /api/settings` returns the public settings: WhatsApp number, inside/outside delivery fees, and product categories. It never returns the admin password.
+`GET /api/settings` returns only the public settings: WhatsApp number, inside/outside delivery fees, and product categories. It never returns admin credentials.
 
 ## Update store settings
 
-`POST /api/settings` with the bearer token and `{ "settings": { ... } }` merges any supplied public setting fields. Supported fields are `whatsapp`, `deliveryCharge`, `outsideDeliveryCharge`, and `categories`. Example:
+`POST /api/settings` with the admin bearer password and `{ "settings": { ... } }` merges supplied public setting fields. Supported fields are `whatsapp`, `deliveryCharge`, `outsideDeliveryCharge`, and `categories`.
 
 ```json
 {
@@ -23,11 +25,11 @@ The site exposes a server-side product-management API for Manus agents. Set `MAN
 }
 ```
 
-The browser store refreshes shared settings on load. `adminPassword` is deliberately excluded; configure the website's admin password separately to match `PRODUCT_ADMIN_API_TOKEN`.
+Admin password changes are made from the Admin page. New passwords must be 16–256 characters and are stored only as a hash.
 
 ## Create or update one product
 
-`POST /api/products` with `Content-Type: application/json` and an authenticated bearer token:
+`POST /api/products` with `Content-Type: application/json` and the admin bearer password:
 
 ```json
 {
@@ -46,7 +48,7 @@ The browser store refreshes shared settings on load. `adminPassword` is delibera
 }
 ```
 
-Use real product details and genuine product media URLs. Up to 15 image/video URLs are accepted per product.
+Use accurate product details and genuine product media URLs. Up to 15 image/video URLs are accepted per product.
 
 ## Bulk import / reorder
 
@@ -54,12 +56,12 @@ Use real product details and genuine product media URLs. Up to 15 image/video UR
 
 ## Delete
 
-`DELETE /api/products?id=<product-id>` removes that product by its exact ID. This is irreversible; agents should only call it when specifically directed.
+`DELETE /api/products?id=<product-id>` removes that product by its exact ID. This is irreversible; only do it when explicitly directed.
 
 ## Upload media
 
-1. `POST /api/media-upload` with the same bearer token and JSON `{ "name":"front.webp", "type":"image/webp", "size":12345 }`.
-2. The response includes `signedUrl`, `token`, `path`, and `publicUrl`. POST the raw file bytes to `signedUrl` with `Content-Type` matching the file's MIME type and `x-upsert: false`.
-3. Use `publicUrl` in the product's `images` array; image/video upload URLs expire and should not be saved.
+1. `POST /api/media-upload` with the admin bearer password and JSON `{ "name":"front.webp", "type":"image/webp", "size":12345 }`.
+2. The response includes `signedUrl`, `token`, `path`, and `publicUrl`. Upload the raw file bytes to `signedUrl` using **HTTP PUT**, with `Content-Type` matching the file MIME type and header `x-upsert: false`.
+3. Use `publicUrl` in the product's `images` array. Signed upload URLs expire and should not be saved.
 
-Supported image types: JPEG, PNG, WebP, AVIF and GIF (25 MB maximum each). Supported video types: MP4, WebM and MOV/QuickTime (100 MB maximum each). The storage bucket and database migration must be applied before these endpoints can persist data.
+Supported image types: JPEG, PNG, WebP, AVIF and GIF (25 MB maximum each). Supported video types: MP4, WebM and MOV/QuickTime (100 MB maximum each). The `product-media` bucket allows public reads but does not allow anonymous uploads; signed upload tickets are issued only after the server verifies the administrator password.

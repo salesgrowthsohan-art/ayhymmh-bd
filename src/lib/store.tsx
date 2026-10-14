@@ -31,7 +31,6 @@ export type Settings = {
   deliveryCharge: number;
   /** Delivery fee outside Dhaka. */
   outsideDeliveryCharge: number;
-  adminPassword: string;
   categories: string[];
 };
 
@@ -47,7 +46,6 @@ export const DEFAULT_SETTINGS: Settings = {
   whatsapp: "01630871105",
   deliveryCharge: 60,
   outsideDeliveryCharge: 120,
-  adminPassword: "1240928",
   categories: ["flag", "keychain", "face mask", "miniature"],
 };
 
@@ -161,7 +159,8 @@ type StoreValue = {
   deleteProduct: (id: string) => void;
   moveProduct: (id: string, direction: -1 | 1) => void;
   saveSettings: (s: Partial<Settings>) => void;
-  login: (password: string) => boolean;
+  login: (password: string) => Promise<boolean>;
+  changeAdminPassword: (newPassword: string) => Promise<boolean>;
   logout: () => void;
   waLink: (message: string) => string;
 };
@@ -180,7 +179,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     setProducts(read(KEYS.products, SEED_PRODUCTS));
-    setSettings({ ...DEFAULT_SETTINGS, ...read(KEYS.settings, {}) });
+    const savedSettings = read<Partial<Settings> & { adminPassword?: string }>(KEYS.settings, {});
+    delete savedSettings.adminPassword;
+    setSettings({ ...DEFAULT_SETTINGS, ...savedSettings });
     setCart(read(KEYS.cart, [] as CartLine[]));
     setHydrated(true);
   }, []);
@@ -222,7 +223,6 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         setSettings((current) => ({
           ...current,
           ...payload.settings,
-          adminPassword: current.adminPassword,
         }));
       } catch {
         // Continue using settings saved on this device when shared storage is unavailable.
@@ -366,13 +366,38 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           })
           .catch(() => setCatalogWriteError("Store settings could not be synchronized."));
       },
-      login: (password) => {
-        const ok = password === settings.adminPassword;
-        if (ok) {
+      login: async (password) => {
+        try {
+          const response = await fetch("/api/admin-login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ password }),
+          });
+          if (!response.ok) return false;
           setIsAdmin(true);
           setApiToken(password);
+          return true;
+        } catch {
+          return false;
         }
-        return ok;
+      },
+      changeAdminPassword: async (newPassword) => {
+        if (!apiToken) return false;
+        try {
+          const response = await fetch("/api/admin-password", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${apiToken}`,
+            },
+            body: JSON.stringify({ newPassword }),
+          });
+          if (!response.ok) return false;
+          setApiToken(newPassword);
+          return true;
+        } catch {
+          return false;
+        }
       },
       logout: () => {
         setIsAdmin(false);

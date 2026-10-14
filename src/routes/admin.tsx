@@ -55,6 +55,7 @@ function Admin() {
   const [err, setErr] = useState("");
   const [fails, setFails] = useState(0);
   const [lockedUntil, setLockedUntil] = useState(0);
+  const [authenticating, setAuthenticating] = useState(false);
 
   // Auto-logout after 5 minutes of inactivity
   useEffect(() => {
@@ -78,13 +79,20 @@ function Admin() {
     return (
       <div className="mx-auto max-w-sm px-4 py-16">
         <form
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
             if (locked) {
               setErr("অনেকবার ভুল হয়েছে — কিছুক্ষণ পর আবার চেষ্টা করুন");
               return;
             }
-            if (!login(pw)) {
+            setAuthenticating(true);
+            const ok = await login(pw);
+            setAuthenticating(false);
+            if (ok) {
+              setPw("");
+              setErr("");
+            }
+            if (!ok) {
               const next = fails + 1;
               setFails(next);
               if (next >= 5) {
@@ -92,7 +100,7 @@ function Admin() {
                 setFails(0);
                 setErr("৫ বার ভুল পাসওয়ার্ড — ৩০ সেকেন্ডের জন্য লক");
               } else {
-                setErr("ভুল পাসওয়ার্ড");
+                setErr("ভুল পাসওয়ার্ড অথবা সার্ভার সংযোগ নেই");
               }
             }
           }}
@@ -113,8 +121,11 @@ function Admin() {
             />
           </label>
           {err && <p className="mt-1 text-xs text-destructive">{err}</p>}
-          <button className="brutal-sm press mt-4 w-full rounded-2xl bg-brand px-4 py-2.5 font-bold">
-            Login
+          <button
+            disabled={authenticating}
+            className="brutal-sm press mt-4 w-full rounded-2xl bg-brand px-4 py-2.5 font-bold disabled:opacity-60"
+          >
+            {authenticating ? "Checking…" : "Login"}
           </button>
         </form>
         <Link
@@ -185,9 +196,7 @@ function ProductManager() {
       return;
     }
     if (!apiToken) {
-      setMediaError(
-        "Set PRODUCT_ADMIN_API_TOKEN to the same value as the admin password before uploading.",
-      );
+      setMediaError("ছবি আপলোড করতে Admin-এ আবার লগইন করুন।");
       return;
     }
     setUploading(true);
@@ -207,7 +216,7 @@ function ProductManager() {
         if (!ticketResponse.ok || !ticket.signedUrl || !ticket.publicUrl)
           throw new Error(ticket.error || "Storage upload is not configured.");
         const uploadResponse = await fetch(ticket.signedUrl, {
-          method: "POST",
+          method: "PUT",
           headers: { "Content-Type": file.type, "x-upsert": "false" },
           body: file,
         });
@@ -572,7 +581,7 @@ function StockAlert() {
 }
 
 function StoreSettings() {
-  const { settings, products, saveSettings } = useStore();
+  const { settings, products, saveSettings, changeAdminPassword } = useStore();
   const [wa, setWa] = useState(settings.whatsapp);
   const [fee, setFee] = useState(String(settings.deliveryCharge));
   const [outsideFee, setOutsideFee] = useState(String(settings.outsideDeliveryCharge));
@@ -710,7 +719,7 @@ function StoreSettings() {
         <h3 className="text-sm font-bold">Change admin password</h3>
         <div className="mt-2 grid gap-3 sm:grid-cols-2">
           <label className="block text-sm font-semibold">
-            নতুন পাসওয়ার্ড
+            নতুন পাসওয়ার্ড (অন্তত ১৬ অক্ষর)
             <input
               type="password"
               className={field}
@@ -729,10 +738,11 @@ function StoreSettings() {
           </label>
         </div>
         <button
-          onClick={() => {
-            if (pw1.length < 4) return setMsg("পাসওয়ার্ড অন্তত ৪ অক্ষরের হতে হবে");
+          onClick={async () => {
+            if (pw1.length < 16) return setMsg("পাসওয়ার্ড অন্তত ১৬ অক্ষরের হতে হবে");
             if (pw1 !== pw2) return setMsg("দুটো পাসওয়ার্ড মেলেনি");
-            saveSettings({ adminPassword: pw1 });
+            const updated = await changeAdminPassword(pw1);
+            if (!updated) return setMsg("পাসওয়ার্ড বদলানো যায়নি — আবার লগইন করুন");
             setPw1("");
             setPw2("");
             setMsg("পাসওয়ার্ড বদলানো হয়েছে ✅");
