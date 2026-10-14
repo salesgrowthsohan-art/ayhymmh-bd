@@ -57,7 +57,7 @@ export function ProductMedia({
         muted
         loop
         playsInline
-        autoPlay
+        autoPlay={loading === "eager"}
         preload="none"
         onError={() => setFailed(true)}
       />

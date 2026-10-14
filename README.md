@@ -21,15 +21,22 @@ This is a TanStack Start server-rendered React application built with Nitro for 
 
 - `/` — store catalogue
 - `/product/:sku` — product details
-- `/admin` — client-side store management
+- `/admin` — store management
 
 ## Data and integrations
 
-There are no server-side environment variables or external backend integrations configured. Product data, cart, settings, and admin state are stored in each visitor's browser localStorage. Order checkout opens WhatsApp using the store number configured in the app.
+Cart and store settings remain in each visitor's browser localStorage. Products are loaded from the shared catalog API when Supabase is configured, with the original local catalog retained as a graceful fallback. Product images/videos upload directly to Supabase Storage using short-lived signed URLs rather than being placed in localStorage or sent through the application server.
+
+1. Copy `.env.example` to `.env` for local use and provide the server-only Supabase project URL and service-role key. Set `PRODUCT_ADMIN_API_TOKEN` to the exact admin login password configured in store settings, and set a separate long random `MANUS_AGENT_API_TOKEN`.
+2. Apply `supabase/migrations/20261014000000_shared_catalog_and_media.sql` to create the shared product table and public media bucket.
+3. Add these variables to the Vercel deployment environment and redeploy. Never expose or prefix the service-role key with `VITE_`.
+4. Give a Manus agent the token through its secure environment and the REST contract in `docs/manus-agent-product-api.md`.
+
+Without backend credentials, API routes return a safe unavailable response and the site continues using its browser-local fallback. Cross-browser product sharing and cloud uploads require completing the setup above.
 
 ## Production notes
 
 - The app is a TanStack Start SSR app and is Vercel-ready through Nitro; do not add a static SPA rewrite.
-- Product data, cart state, settings, and the admin session currently live in each visitor's browser `localStorage`. This is suitable for a single-device prototype, not shared multi-admin production data.
-- The current admin password is stored in client code and is therefore not a secure production authentication mechanism. Replace the client-side admin flow with a real backend auth system before using it for sensitive operations.
-- Replace `public/social-preview-placeholder.svg` and `public/favicon.svg` with the final approved brand assets before launch.
+- The existing admin password settings remain client-side. Use a strong `PRODUCT_ADMIN_API_TOKEN` and keep it matched to the admin login password to authorize admin writes; do not rely on the repository's demo password for production.
+- `GET /api/products` is public; create/update/delete and media-signing operations require a bearer token. See `docs/manus-agent-product-api.md`.
+- `public/favicon.svg` remains the project's existing icon; social cards now use the branded `public/social-preview.svg` asset.

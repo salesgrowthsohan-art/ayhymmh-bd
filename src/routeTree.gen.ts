@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as ApiMediaUploadRouteImport } from './routes/api.media-upload'
+import { Route as ApiProductsRouteImport } from './routes/api.products'
 import { Route as ProductSkuRouteImport } from './routes/product.$sku'
 
 const IndexRoute = IndexRouteImport.update({
@@ -23,6 +25,16 @@ const AdminRoute = AdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiMediaUploadRoute = ApiMediaUploadRouteImport.update({
+  id: '/api/media-upload',
+  path: '/api/media-upload',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiProductsRoute = ApiProductsRouteImport.update({
+  id: '/api/products',
+  path: '/api/products',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProductSkuRoute = ProductSkuRouteImport.update({
   id: '/product/$sku',
   path: '/product/$sku',
@@ -32,30 +44,45 @@ const ProductSkuRoute = ProductSkuRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/api/media-upload': typeof ApiMediaUploadRoute
+  '/api/products': typeof ApiProductsRoute
   '/product/$sku': typeof ProductSkuRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/api/media-upload': typeof ApiMediaUploadRoute
+  '/api/products': typeof ApiProductsRoute
   '/product/$sku': typeof ProductSkuRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/api/media-upload': typeof ApiMediaUploadRoute
+  '/api/products': typeof ApiProductsRoute
   '/product/$sku': typeof ProductSkuRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/product/$sku'
+  fullPaths:
+    '/' | '/admin' | '/api/media-upload' | '/api/products' | '/product/$sku'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/product/$sku'
-  id: '__root__' | '/' | '/admin' | '/product/$sku'
+  to: '/' | '/admin' | '/api/media-upload' | '/api/products' | '/product/$sku'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/api/media-upload'
+    | '/api/products'
+    | '/product/$sku'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  ApiMediaUploadRoute: typeof ApiMediaUploadRoute
+  ApiProductsRoute: typeof ApiProductsRoute
   ProductSkuRoute: typeof ProductSkuRoute
 }
 
@@ -75,6 +102,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/media-upload': {
+      id: '/api/media-upload'
+      path: '/api/media-upload'
+      fullPath: '/api/media-upload'
+      preLoaderRoute: typeof ApiMediaUploadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/products': {
+      id: '/api/products'
+      path: '/api/products'
+      fullPath: '/api/products'
+      preLoaderRoute: typeof ApiProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/product/$sku': {
       id: '/product/$sku'
       path: '/product/$sku'
@@ -88,6 +129,8 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  ApiMediaUploadRoute: ApiMediaUploadRoute,
+  ApiProductsRoute: ApiProductsRoute,
   ProductSkuRoute: ProductSkuRoute,
 }
 export const routeTree = rootRouteImport

@@ -88,13 +88,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         property: "og:description",
         content: "Meme apparel and accessories from Dhaka with delivery across Bangladesh.",
       },
-      { property: "og:image", content: "/social-preview-placeholder.svg" },
+      { property: "og:image", content: "/social-preview.svg" },
       { name: "twitter:title", content: "Ayhymmh | Meme Apparel from Dhaka" },
       {
         name: "twitter:description",
         content: "Meme apparel and accessories from Dhaka with delivery across Bangladesh.",
       },
-      { name: "twitter:image", content: "/social-preview-placeholder.svg" },
+      { name: "twitter:image", content: "/social-preview.svg" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [

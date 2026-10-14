@@ -41,7 +41,6 @@ const KEYS = {
   products: "cg.products.v1",
   cart: "cg.cart.v1",
   settings: "cg.settings.v1",
-  admin: "cg.admin.v1",
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -144,6 +143,9 @@ function write(key: string, value: unknown) {
 
 type StoreValue = {
   hydrated: boolean;
+  apiToken: string;
+  sharedCatalog: boolean;
+  catalogWriteError: string;
   products: Product[];
   settings: Settings;
   cart: CartLine[];
@@ -172,13 +174,37 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [cart, setCart] = useState<CartLine[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [apiToken, setApiToken] = useState("");
+  const [sharedCatalog, setSharedCatalog] = useState(false);
+  const [catalogWriteError, setCatalogWriteError] = useState("");
 
   useEffect(() => {
     setProducts(read(KEYS.products, SEED_PRODUCTS));
     setSettings({ ...DEFAULT_SETTINGS, ...read(KEYS.settings, {}) });
     setCart(read(KEYS.cart, [] as CartLine[]));
-    setIsAdmin(read(KEYS.admin, false));
     setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    const refresh = async () => {
+      try {
+        const response = await fetch("/api/products", { cache: "no-store" });
+        if (!response.ok) return;
+        const payload = (await response.json()) as { products?: Product[] };
+        if (!active || !Array.isArray(payload.products)) return;
+        setSharedCatalog(true);
+        if (payload.products.length) setProducts(payload.products);
+      } catch {
+        // Keep the current browser catalog usable when shared storage is offline or unconfigured.
+      }
+    };
+    void refresh();
+    const interval = window.setInterval(() => void refresh(), 30_000);
+    return () => {
+      active = false;
+      window.clearInterval(interval);
+    };
   }, []);
 
   useEffect(() => {
@@ -190,10 +216,6 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (hydrated) write(KEYS.cart, cart);
   }, [cart, hydrated]);
-  useEffect(() => {
-    if (hydrated) write(KEYS.admin, isAdmin);
-  }, [isAdmin, hydrated]);
-
   const addToCart = useCallback((sku: string, qty = 1) => {
     setCart((c) => {
       const found = c.find((l) => l.sku === sku);
@@ -218,6 +240,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     const cartCount = cart.reduce((sum, l) => sum + l.qty, 0);
     return {
       hydrated,
+      apiToken,
+      sharedCatalog,
+      catalogWriteError,
       products,
       settings,
       cart,
@@ -229,11 +254,46 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       setQty,
       removeFromCart: (sku) => setCart((c) => c.filter((l) => l.sku !== sku)),
       clearCart: () => setCart([]),
-      saveProduct: (p) =>
-        setProducts((list) =>
-          list.some((x) => x.id === p.id) ? list.map((x) => (x.id === p.id ? p : x)) : [p, ...list],
-        ),
-      deleteProduct: (id) => setProducts((list) => list.filter((x) => x.id !== id)),
+      saveProduct: (p) => {
+        const next = products.some((x) => x.id === p.id)
+          ? products.map((x) => (x.id === p.id ? p : x))
+          : [p, ...products];
+        setProducts(next);
+        if (apiToken)
+          void fetch("/api/products", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiToken}` },
+            body: JSON.stringify({ product: p }),
+          })
+            .then(async (response) => {
+              if (response.ok) return setCatalogWriteError("");
+              const payload = (await response.json().catch(() => ({}))) as { error?: string };
+              setCatalogWriteError(
+                payload.error || "Product could not be synchronized to shared storage.",
+              );
+            })
+            .catch(() =>
+              setCatalogWriteError("Product could not be synchronized to shared storage."),
+            );
+      },
+      deleteProduct: (id) => {
+        setProducts(products.filter((x) => x.id !== id));
+        if (apiToken)
+          void fetch(`/api/products?id=${encodeURIComponent(id)}`, {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${apiToken}` },
+          })
+            .then(async (response) => {
+              if (response.ok) return setCatalogWriteError("");
+              const payload = (await response.json().catch(() => ({}))) as { error?: string };
+              setCatalogWriteError(
+                payload.error || "Product could not be synchronized to shared storage.",
+              );
+            })
+            .catch(() =>
+              setCatalogWriteError("Product could not be synchronized to shared storage."),
+            );
+      },
       moveProduct: (id, direction) =>
         setProducts((list) => {
           const from = list.findIndex((product) => product.id === id);
@@ -244,22 +304,51 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           if (!moved) return list;
           next.splice(from, 1);
           next.splice(to, 0, moved);
+          if (apiToken)
+            void fetch("/api/products", {
+              method: "POST",
+              headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiToken}` },
+              body: JSON.stringify({ products: next }),
+            })
+              .then(async (response) => {
+                if (response.ok) return setCatalogWriteError("");
+                const payload = (await response.json().catch(() => ({}))) as { error?: string };
+                setCatalogWriteError(payload.error || "Product order could not be synchronized.");
+              })
+              .catch(() => setCatalogWriteError("Product order could not be synchronized."));
           return next;
         }),
       saveSettings: (s) => setSettings((old) => ({ ...old, ...s })),
       login: (password) => {
         const ok = password === settings.adminPassword;
-        if (ok) setIsAdmin(true);
+        if (ok) {
+          setIsAdmin(true);
+          setApiToken(password);
+        }
         return ok;
       },
-      logout: () => setIsAdmin(false),
+      logout: () => {
+        setIsAdmin(false);
+        setApiToken("");
+      },
       waLink: (message) => {
         const digits = settings.whatsapp.replace(/\D/g, "");
         const intl = digits.startsWith("88") ? digits : `88${digits.replace(/^0?/, "0")}`;
         return `https://wa.me/${intl}?text=${encodeURIComponent(message)}`;
       },
     };
-  }, [hydrated, products, settings, cart, isAdmin, addToCart, setQty]);
+  }, [
+    hydrated,
+    products,
+    settings,
+    cart,
+    isAdmin,
+    apiToken,
+    sharedCatalog,
+    catalogWriteError,
+    addToCart,
+    setQty,
+  ]);
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }

@@ -1,0 +1,7 @@
+{
+  "routes": [
+    { "path": "/", "title": "Ayhymmh Store" },
+    { "path": "/admin", "title": "Admin | Ayhymmh" },
+    { "path": "/product/:sku", "title": "Product | Ayhymmh" }
+  ]
+}

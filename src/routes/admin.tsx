@@ -145,10 +145,22 @@ function Admin() {
 }
 
 function ProductManager() {
-  const { products, settings, saveProduct, deleteProduct, moveProduct } = useStore();
+  const {
+    products,
+    settings,
+    saveProduct,
+    deleteProduct,
+    moveProduct,
+    apiToken,
+    sharedCatalog,
+    catalogWriteError,
+  } = useStore();
   const [draft, setDraft] = useState<Product | null>(null);
   const [imgText, setImgText] = useState("");
   const [mediaError, setMediaError] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [syncMessage, setSyncMessage] = useState("");
   const mediaInput = useRef<HTMLInputElement>(null);
 
   const edit = (p: Product) => {
@@ -163,26 +175,53 @@ function ProductManager() {
   const addMediaFiles = async (files: FileList | null) => {
     if (!files) return;
     setMediaError("");
-    const selected = Array.from(files).slice(0, 4);
-    const totalSize = selected.reduce((sum, file) => sum + file.size, 0);
-    if (selected.some((file) => file.size > 800_000) || totalSize > 1_800_000) {
+    const selected = Array.from(files);
+    const existingCount = imgText
+      .split(/[\n,]/)
+      .map((x) => x.trim())
+      .filter(Boolean).length;
+    if (existingCount + selected.length > 15) {
+      setMediaError("প্রতি পণ্যে সর্বোচ্চ ১৫টি ছবি/ভিডিও রাখা যাবে।");
+      return;
+    }
+    if (!apiToken) {
       setMediaError(
-        "প্রতি file 800KB এবং সব মিলিয়ে 1.8MB-এর মধ্যে রাখুন, তাহলে স্টোর দ্রুত থাকবে।",
+        "Set PRODUCT_ADMIN_API_TOKEN to the same value as the admin password before uploading.",
       );
       return;
     }
-    const encoded = await Promise.all(
-      selected.map(
-        (file) =>
-          new Promise<string>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(String(reader.result ?? ""));
-            reader.onerror = () => reject(new Error("Media read failed"));
-            reader.readAsDataURL(file);
-          }),
-      ),
-    );
-    setImgText((current) => [current.trim(), ...encoded].filter(Boolean).join("\n"));
+    setUploading(true);
+    try {
+      const uploaded: string[] = [];
+      for (const file of selected) {
+        const ticketResponse = await fetch("/api/media-upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiToken}` },
+          body: JSON.stringify({ name: file.name, type: file.type, size: file.size }),
+        });
+        const ticket = (await ticketResponse.json()) as {
+          signedUrl?: string;
+          publicUrl?: string;
+          error?: string;
+        };
+        if (!ticketResponse.ok || !ticket.signedUrl || !ticket.publicUrl)
+          throw new Error(ticket.error || "Storage upload is not configured.");
+        const uploadResponse = await fetch(ticket.signedUrl, {
+          method: "POST",
+          headers: { "Content-Type": file.type, "x-upsert": "false" },
+          body: file,
+        });
+        if (!uploadResponse.ok)
+          throw new Error(`${file.name} upload failed (${uploadResponse.status}).`);
+        uploaded.push(ticket.publicUrl);
+      }
+      setImgText((current) => [current.trim(), ...uploaded].filter(Boolean).join("\n"));
+    } catch (error) {
+      setMediaError(error instanceof Error ? error.message : "Media upload failed.");
+    } finally {
+      setUploading(false);
+      if (mediaInput.current) mediaInput.current.value = "";
+    }
   };
 
   const submit = (e: React.FormEvent) => {
@@ -192,7 +231,7 @@ function ProductManager() {
       .split(/[\n,]/)
       .map((s) => s.trim())
       .filter(Boolean);
-    if (!draft.title.trim() || !draft.sku.trim() || !images.length) return;
+    if (!draft.title.trim() || !draft.sku.trim() || !images.length || images.length > 15) return;
     saveProduct({
       ...draft,
       title: draft.title.trim(),
@@ -214,6 +253,51 @@ function ProductManager() {
           + Add product
         </button>
       </div>
+      <p className="mt-2 text-xs font-semibold" role={catalogWriteError ? "alert" : undefined}>
+        Shared catalog: {sharedCatalog ? "connected" : "not configured — browser fallback"}
+        {catalogWriteError ? ` · ${catalogWriteError}` : ""}
+      </p>
+      {sharedCatalog && (
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            disabled={syncing}
+            onClick={async () => {
+              if (!apiToken)
+                return setSyncMessage("Log in with the configured admin API token first.");
+              setSyncing(true);
+              setSyncMessage("");
+              try {
+                const response = await fetch("/api/products", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${apiToken}`,
+                  },
+                  body: JSON.stringify({ products }),
+                });
+                const result = (await response.json()) as { count?: number; error?: string };
+                if (!response.ok) throw new Error(result.error || "Catalog sync failed.");
+                setSyncMessage(
+                  `${result.count ?? products.length} products synced to shared storage.`,
+                );
+              } catch (error) {
+                setSyncMessage(error instanceof Error ? error.message : "Catalog sync failed.");
+              } finally {
+                setSyncing(false);
+              }
+            }}
+            className="brutal-sm press rounded-xl bg-mint px-3 py-2 text-xs font-bold disabled:opacity-50"
+          >
+            {syncing ? "Syncing…" : "Sync this browser's products to cloud"}
+          </button>
+          {syncMessage && (
+            <span role="status" className="text-xs font-semibold">
+              {syncMessage}
+            </span>
+          )}
+        </div>
+      )}
 
       {draft && (
         <form
@@ -282,7 +366,7 @@ function ProductManager() {
           <input
             ref={mediaInput}
             type="file"
-            accept="image/jpeg,image/png,image/webp,video/mp4,video/webm"
+            accept="image/jpeg,image/png,image/webp,image/avif,image/gif,video/mp4,video/webm,video/quicktime"
             multiple
             className="sr-only"
             onChange={(event) => void addMediaFiles(event.target.files)}
@@ -290,12 +374,14 @@ function ProductManager() {
           <button
             type="button"
             onClick={() => mediaInput.current?.click()}
+            disabled={uploading}
             className="brutal-sm press flex min-h-11 items-center gap-2 bg-card px-3 py-2 text-sm font-bold"
           >
-            <ImagePlus size={18} aria-hidden /> ছবি / ভিডিও Upload
+            <ImagePlus size={18} aria-hidden /> {uploading ? "Uploading…" : "ছবি / ভিডিও Upload"}
           </button>
           <p className="text-xs text-muted-foreground">
-            সর্বোচ্চ ৪টি, সব মিলিয়ে 1.8MB। প্রথম media-টি product cover হবে।
+            সর্বোচ্চ ১৫টি high-quality media। ছবি সর্বোচ্চ ২৫MB, ভিডিও সর্বোচ্চ ১০০MB; cloud
+            storage-এ সরাসরি upload হবে। প্রথম media-টি product cover হবে।
           </p>
           {mediaError && <p className="text-xs font-semibold text-destructive">{mediaError}</p>}
           <label className="block text-sm font-semibold">
