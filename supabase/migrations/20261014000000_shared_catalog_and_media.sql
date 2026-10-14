@@ -22,6 +22,15 @@ create trigger store_products_touch_updated_at
 before update on public.store_products
 for each row execute function public.touch_store_product_updated_at();
 
+-- Public operational settings (WhatsApp, delivery fees, categories) are exposed
+-- through the application API; the browser and agents never receive adminPassword.
+create table if not exists public.store_settings (
+  id integer primary key default 1 check (id = 1),
+  settings jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+alter table public.store_settings enable row level security;
+
 -- Public read URLs are needed for customer-facing product cards; writes use short-lived
 -- signed upload URLs issued only after server-side admin/agent bearer-token validation.
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)

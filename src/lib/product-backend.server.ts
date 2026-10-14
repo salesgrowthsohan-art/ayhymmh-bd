@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import type { Product } from "@/lib/store";
+import type { Product, Settings } from "@/lib/store";
 
 const url = process.env["SUPABASE_URL"];
 const serviceKey = process.env["SUPABASE_SERVICE_ROLE_KEY"];
@@ -72,6 +72,44 @@ export async function deleteProduct(id: string) {
   const client = supabase();
   const { error } = await client.from("store_products").delete().eq("id", id);
   if (error) throw error;
+}
+
+const publicSettings = (settings: Partial<Settings>) => ({
+  ...(typeof settings.whatsapp === "string" ? { whatsapp: settings.whatsapp } : {}),
+  ...(typeof settings.deliveryCharge === "number"
+    ? { deliveryCharge: settings.deliveryCharge }
+    : {}),
+  ...(typeof settings.outsideDeliveryCharge === "number"
+    ? { outsideDeliveryCharge: settings.outsideDeliveryCharge }
+    : {}),
+  ...(Array.isArray(settings.categories) ? { categories: settings.categories } : {}),
+});
+
+export async function getStoreSettings(): Promise<Partial<Settings>> {
+  const { data, error } = await supabase()
+    .from("store_settings")
+    .select("settings")
+    .eq("id", 1)
+    .maybeSingle();
+  if (error) throw error;
+  return data?.settings ? publicSettings(data.settings as Partial<Settings>) : {};
+}
+
+export async function saveStoreSettings(settings: Partial<Settings>) {
+  const client = supabase();
+  const { data, error: readError } = await client
+    .from("store_settings")
+    .select("settings")
+    .eq("id", 1)
+    .maybeSingle();
+  if (readError) throw readError;
+  const merged = {
+    ...publicSettings((data?.settings ?? {}) as Partial<Settings>),
+    ...publicSettings(settings),
+  };
+  const { error } = await client.from("store_settings").upsert({ id: 1, settings: merged });
+  if (error) throw error;
+  return merged;
 }
 
 export async function createMediaUpload(name: string, contentType: string) {

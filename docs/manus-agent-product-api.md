@@ -6,6 +6,25 @@ The site exposes a server-side product-management API for Manus agents. Set `MAN
 
 `GET /api/products` returns `{ "products": [...] }`. This route is public and read-only.
 
+`GET /api/settings` returns the public settings: WhatsApp number, inside/outside delivery fees, and product categories. It never returns the admin password.
+
+## Update store settings
+
+`POST /api/settings` with the bearer token and `{ "settings": { ... } }` merges any supplied public setting fields. Supported fields are `whatsapp`, `deliveryCharge`, `outsideDeliveryCharge`, and `categories`. Example:
+
+```json
+{
+  "settings": {
+    "whatsapp": "8801630871105",
+    "deliveryCharge": 70,
+    "outsideDeliveryCharge": 130,
+    "categories": ["flag", "keychain", "face mask", "miniature"]
+  }
+}
+```
+
+The browser store refreshes shared settings on load. `adminPassword` is deliberately excluded; configure the website's admin password separately to match `PRODUCT_ADMIN_API_TOKEN`.
+
 ## Create or update one product
 
 `POST /api/products` with `Content-Type: application/json` and an authenticated bearer token:

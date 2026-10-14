@@ -211,6 +211,31 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (hydrated) write(KEYS.products, products);
   }, [products, hydrated]);
   useEffect(() => {
+    if (!hydrated) return;
+    let active = true;
+    const refreshSettings = async () => {
+      try {
+        const response = await fetch("/api/settings", { cache: "no-store" });
+        if (!response.ok) return;
+        const payload = (await response.json()) as { settings?: Partial<Settings> };
+        if (!active || !payload.settings) return;
+        setSettings((current) => ({
+          ...current,
+          ...payload.settings,
+          adminPassword: current.adminPassword,
+        }));
+      } catch {
+        // Continue using settings saved on this device when shared storage is unavailable.
+      }
+    };
+    void refreshSettings();
+    const interval = window.setInterval(() => void refreshSettings(), 30_000);
+    return () => {
+      active = false;
+      window.clearInterval(interval);
+    };
+  }, [hydrated]);
+  useEffect(() => {
     if (hydrated) write(KEYS.settings, settings);
   }, [settings, hydrated]);
   useEffect(() => {
@@ -318,7 +343,29 @@ export function StoreProvider({ children }: { children: ReactNode }) {
               .catch(() => setCatalogWriteError("Product order could not be synchronized."));
           return next;
         }),
-      saveSettings: (s) => setSettings((old) => ({ ...old, ...s })),
+      saveSettings: (s) => {
+        const next = { ...settings, ...s };
+        setSettings(next);
+        if (!apiToken) return;
+        void fetch("/api/settings", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiToken}` },
+          body: JSON.stringify({
+            settings: {
+              whatsapp: next.whatsapp,
+              deliveryCharge: next.deliveryCharge,
+              outsideDeliveryCharge: next.outsideDeliveryCharge,
+              categories: next.categories,
+            },
+          }),
+        })
+          .then(async (response) => {
+            if (response.ok) return setCatalogWriteError("");
+            const payload = (await response.json().catch(() => ({}))) as { error?: string };
+            setCatalogWriteError(payload.error || "Store settings could not be synchronized.");
+          })
+          .catch(() => setCatalogWriteError("Store settings could not be synchronized."));
+      },
       login: (password) => {
         const ok = password === settings.adminPassword;
         if (ok) {
