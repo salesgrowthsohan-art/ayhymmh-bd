@@ -6,6 +6,9 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import { defineConfig } from "vite";
 
 export default defineConfig({
+  server: {
+    allowedHosts: [".us4.manus.computer"],
+  },
   plugins: [
     tanstackStart({
       server: { entry: "server" },
